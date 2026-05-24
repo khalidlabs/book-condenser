@@ -160,8 +160,8 @@ The package exposes `book-condenser` as a console script and `python -m book_con
 1. Confirm the repository root is this project directory, not a parent home directory.
 2. Verify no `.env`, `books/`, `out/`, generated abridgements, or copyrighted fixtures are tracked.
 3. Run `ruff check .`, `pytest`, `python -m build`, and `twine check dist/*`.
-4. Publish to TestPyPI first and smoke-test installation.
-5. Tag the release only after package install and CLI smoke tests pass.
+4. Configure PyPI trusted publishing for `khalidlabs/book-condenser` using the `Publish to PyPI` workflow.
+5. Publish a GitHub release or run the publish workflow manually after package install and CLI smoke tests pass.
 
 ## License
 
