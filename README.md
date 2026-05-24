@@ -1,6 +1,12 @@
 # Book Condenser
 
-Book Condenser creates quotation-dominant extractive reading editions of rights-cleared nonfiction books. It uses the OpenAI API to select passage identifiers and analytical metadata, then assembles exact source prose into a large-type, tablet-friendly PDF with Markdown, DOCX, JSON, and audit outputs.
+## Read the Essential Book
+
+Book Condenser creates an extractive abridgement of a nonfiction book. An AI model identifies the original passages that carry the book's central argument, evidence, concepts, turning points, and conclusions. The software then assembles those passages verbatim into a shorter, beautifully formatted reading edition.
+
+This approach preserves what makes a serious book valuable: the author's reasoning, voice, and choice of evidence. Many nonfiction books develop their core ideas through repetition, extended examples, and supporting detail. By retaining the passages that do the essential intellectual work, Book Condenser makes the book more efficient to read while keeping the reader in direct contact with the original text.
+
+The result is a condensed, tablet-friendly PDF designed for focused reading: shorter than the source, richer than a summary, and faithful to the author.
 
 This tool is intended for books you own the rights to process, public-domain works, or other material you are legally allowed to transform and store. Generated outputs may contain substantial verbatim source text.
 

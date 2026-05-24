@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "book-condenser"
 version = "0.1.0"
-description = "Create quotation-dominant extractive reading editions of rights-cleared nonfiction books."
+description = "Read the essential book: create extractive abridgements that preserve the author's original passages."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "LicenseRef-PolyForm-Noncommercial-1.0.0"
