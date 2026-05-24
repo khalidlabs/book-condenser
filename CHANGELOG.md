@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Corrected package metadata links to point to `khalidlabs/book-condenser`.
+
 ## 0.1.0
 
 - Initial public-release preparation.

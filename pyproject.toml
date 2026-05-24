@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "book-condenser"
-version = "0.1.0"
+version = "0.1.1"
 description = "Read the essential book: create extractive abridgements that preserve the author's original passages."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -46,9 +46,9 @@ dev = [
 book-condenser = "book_condenser.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/khalid/book-condenser"
-Repository = "https://github.com/khalid/book-condenser"
-Issues = "https://github.com/khalid/book-condenser/issues"
+Homepage = "https://github.com/khalidlabs/book-condenser"
+Repository = "https://github.com/khalidlabs/book-condenser"
+Issues = "https://github.com/khalidlabs/book-condenser/issues"
 License = "https://polyformproject.org/licenses/noncommercial/1.0.0"
 
 [tool.setuptools.packages.find]
