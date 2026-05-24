@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local environments and secrets
+.venv/
+venv/
+.env
+.env.*
+
+# Build and packaging
+build/
+dist/
+site/
+
+# Generated or private book data
+out/
+books/
+abridgement_output/
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+

@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "book-condenser"
+version = "0.1.0"
+description = "Create quotation-dominant extractive reading editions of rights-cleared nonfiction books."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "LicenseRef-PolyForm-Noncommercial-1.0.0"
+license-files = ["LICENSE"]
+authors = [
+  { name = "Khalid" }
+]
+keywords = ["books", "epub", "pdf", "abridgement", "extractive", "openai", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Text Processing",
+]
+dependencies = [
+  "openai>=2.21.0",
+  "pydantic>=2.7.0",
+  "pymupdf>=1.24.0",
+  "python-docx>=1.1.0",
+  "reportlab>=4.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2.0",
+  "pytest>=8.0.0",
+  "ruff>=0.8.0",
+  "twine>=5.0.0",
+]
+
+[project.scripts]
+book-condenser = "book_condenser.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/khalid/book-condenser"
+Repository = "https://github.com/khalid/book-condenser"
+Issues = "https://github.com/khalid/book-condenser/issues"
+License = "https://polyformproject.org/licenses/noncommercial/1.0.0"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+

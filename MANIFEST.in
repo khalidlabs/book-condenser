@@ -1,0 +1,9 @@
+include CHANGELOG.md
+include CONTRIBUTING.md
+include NOTICE
+include SECURITY.md
+include requirements.txt
+include chapter_map_example.json
+recursive-include examples *.json
+recursive-include tests *.py
+
