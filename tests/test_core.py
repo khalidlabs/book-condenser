@@ -1,5 +1,6 @@
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -11,11 +12,13 @@ from book_condenser.core import (
     QualityControlResponse,
     SelectedBlock,
     StructuralOverview,
+    allocate_output_dir,
     apply_qc_changes,
     choose_blocks_under_budget,
     classify_chapter,
     load_manual_chapter_map,
     normalize_text,
+    output_dir_slug,
     paragraph_split,
     validate_args,
 )
@@ -145,4 +148,33 @@ def test_validate_args_rejects_invalid_ratios() -> None:
 
     with pytest.raises(ValueError, match="candidate-ratio"):
         validate_args(args)
+
+
+def test_output_dir_slug_sanitizes_source_names() -> None:
+    assert output_dir_slug("Eric Greitens - Resilience") == "Eric-Greitens-Resilience"
+
+
+def test_allocate_output_dir_creates_unique_run_folder(tmp_path: Path) -> None:
+    source = tmp_path / "Eric Greitens - Resilience.epub"
+    source.write_text("placeholder", encoding="utf-8")
+    fixed_now = datetime(2026, 5, 24, 12, 30, 45)
+
+    first = allocate_output_dir(tmp_path / "out", source, now=fixed_now)
+    second = allocate_output_dir(tmp_path / "out", source, now=fixed_now)
+
+    assert first == tmp_path / "out" / "Eric-Greitens-Resilience-20260524-123045"
+    assert second == tmp_path / "out" / "Eric-Greitens-Resilience-20260524-123045-2"
+    assert first.exists()
+    assert second.exists()
+
+
+def test_allocate_output_dir_reuse_writes_to_exact_folder(tmp_path: Path) -> None:
+    source = tmp_path / "book.epub"
+    source.write_text("placeholder", encoding="utf-8")
+    target = tmp_path / "out" / "fixed-run"
+
+    output_dir = allocate_output_dir(target, source, reuse=True)
+
+    assert output_dir == target.resolve()
+    assert output_dir.exists()
 

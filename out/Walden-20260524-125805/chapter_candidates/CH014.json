@@ -1,0 +1,147 @@
+{
+  "chapter_id": "CH014",
+  "chapter_title": "Higher Laws",
+  "chapter_contribution_notes": [
+    "Develops the moral/metaphysical dimension of Thoreau’s experiment: contrasts the ‘wild’ and ‘spiritual’ impulses, articulates the primacy of inner genius and moral life, analyzes purity/self-discipline as the mechanism by which higher faculties are realized, and offers illustrative anecdotes of moral ascent."
+  ],
+  "omitted_material_description": [
+    "Selected set omits extended practical discussion of hunting as education and most of the detailed dietary argumentation earlier in the chapter (some paragraphs on fishing, diet, and abstinence) to keep focus on the moral-philosophical core.",
+    "Omitted paragraphs include some descriptive and hortatory material about animal food and table manners that are supportive but not essential to the chapter’s central account of higher laws and moral mechanism."
+  ],
+  "candidate_blocks": [
+    {
+      "block_id": "CH014-K01-B01",
+      "chapter_id": "CH014",
+      "chapter_title": "Higher Laws",
+      "paragraph_ids": [
+        "CH014-P0001"
+      ],
+      "word_count": 359,
+      "selection_reason": "A vivid opening anecdote that introduces the tension between a primitive, ‘savage’ appetite and a higher spiritual instinct; establishes Thoreau’s reverence for both impulses and ties hunting/fishing to intimate natural knowledge—setting up the chapter’s core contrast.",
+      "importance": "High — orients reader to chapter’s central psychological and ethical tension.",
+      "themes": [
+        "wildness vs spirituality",
+        "nature-as-teacher",
+        "method (observation through practice)"
+      ],
+      "redundancy_risk": "Low — unique anecdotal opening that anchors later abstract claims.",
+      "block_function": "representative_episode",
+      "text": "As I came home through the woods with my string of fish, trailing my pole, it\nbeing now quite dark, I caught a glimpse of a woodchuck stealing across my\npath, and felt a strange thrill of savage delight, and was strongly tempted to\nseize and devour him raw; not that I was hungry then, except for that wildness\nwhich he represented. Once or twice, however, while I lived at the pond, I\nfound myself ranging the woods, like a half-starved hound, with a strange\nabandonment, seeking some kind of venison which I might devour, and no morsel\ncould have been too savage for me. The wildest scenes had become unaccountably\nfamiliar. I found in myself, and still find, an instinct toward a higher, or,\nas it is named, spiritual life, as do most men, and another toward a primitive\nrank and savage one, and I reverence them both. I love the wild not less than\nthe good. The wildness and adventure that are in fishing still recommended it\nto me. I like sometimes to take rank hold on life and spend my day more as the\nanimals do. Perhaps I have owed to this employment and to hunting, when quite\nyoung, my closest acquaintance with Nature. They early introduce us to and\ndetain us in scenery with which otherwise, at that age, we should have little\nacquaintance. Fishermen, hunters, woodchoppers, and others, spending their\nlives in the fields and woods, in a peculiar sense a part of Nature themselves,\nare often in a more favorable mood for observing her, in the intervals of their\npursuits, than philosophers or poets even, who approach her with expectation.\nShe is not afraid to exhibit herself to them. The traveller on the prairie is\nnaturally a hunter, on the head waters of the Missouri and Columbia a trapper,\nand at the Falls of St. Mary a fisherman. He who is only a traveller learns\nthings at second-hand and by the halves, and is poor authority. We are most\ninterested when science reports what those men already know practically or\ninstinctively, for that alone is a true humanity, or account of human\nexperience.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH014-K01-B02",
+      "chapter_id": "CH014",
+      "chapter_title": "Higher Laws",
+      "paragraph_ids": [
+        "CH014-P0009"
+      ],
+      "word_count": 227,
+      "selection_reason": "Articulates the normative claim that one must heed the faint promptings of one’s genius—even into extremes—and that authentic success is inward, intangible, and recognized by nature’s approval; connects personal practice to highest values.",
+      "importance": "Essential — expresses the core ethic of following inner moral genius.",
+      "themes": [
+        "following genius",
+        "inner success",
+        "value of ascetic fidelity"
+      ],
+      "redundancy_risk": "Low — central declarative passage not duplicated elsewhere.",
+      "block_function": "claim",
+      "text": "If one listens to the faintest but constant suggestions of his genius, which\nare certainly true, he sees not to what extremes, or even insanity, it may lead\nhim; and yet that way, as he grows more resolute and faithful, his road lies.\nThe faintest assured objection which one healthy man feels will at length\nprevail over the arguments and customs of mankind. No man ever followed his\ngenius till it misled him. Though the result were bodily weakness, yet perhaps\nno one can say that the consequences were to be regretted, for these were a\nlife in conformity to higher principles. If the day and the night are such that\nyou greet them with joy, and life emits a fragrance like flowers and\nsweet-scented herbs, is more elastic, more starry, more immortal,—that is your\nsuccess. All nature is your congratulation, and you have cause momentarily to\nbless yourself. The greatest gains and values are farthest from being\nappreciated. We easily come to doubt if they exist. We soon forget them. They\nare the highest reality. Perhaps the facts most astounding and most real are\nnever communicated by man to man. The true harvest of my daily life is somewhat\nas intangible and indescribable as the tints of morning or evening. It is a\nlittle star-dust caught, a segment of the rainbow which I have clutched.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH014-K01-B03",
+      "chapter_id": "CH014",
+      "chapter_title": "Higher Laws",
+      "paragraph_ids": [
+        "CH014-P0012"
+      ],
+      "word_count": 153,
+      "selection_reason": "Concise moral maxim: life is fundamentally moral; goodness is seed capital that never fails. This paragraph provides an aphoristic summation linking daily habit, perception, and moral economy.",
+      "importance": "High — distills Thoreau’s moral anthropology into a memorable claim.",
+      "themes": [
+        "moral economy",
+        "habit and perception",
+        "universality of moral law"
+      ],
+      "redundancy_risk": "Low — pithy claim that supports multiple thematic strands.",
+      "block_function": "claim",
+      "text": "Our whole life is startlingly moral. There is never an instant’s truce between\nvirtue and vice. Goodness is the only investment that never fails. In the music\nof the harp which trembles round the world it is the insisting on this which\nthrills us. The harp is the travelling patterer for the Universe’s Insurance\nCompany, recommending its laws, and our little goodness is all the assessment\nthat we pay. Though the youth at last grows indifferent, the laws of the\nuniverse are not indifferent, but are forever on the side of the most\nsensitive. Listen to every zephyr for some reproof, for it is surely there, and\nhe is unfortunate who does not hear it. We cannot touch a string or move a stop\nbut the charming moral transfixes us. Many an irksome noise, go a long way off,\nis heard as music, a proud sweet satire on the meanness of our lives.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH014-K01-B04",
+      "chapter_id": "CH014",
+      "chapter_title": "Higher Laws",
+      "paragraph_ids": [
+        "CH014-P0013",
+        "CH014-P0014",
+        "CH014-P0015"
+      ],
+      "word_count": 701,
+      "selection_reason": "Develops the mechanism by which higher faculties are realized: contrasts the animal (reptile/sensual) within with the divine faculties; treats chastity, temperance, and exertion as means to transmute sensual energy into genius, heroism, and holiness. Includes a brief poetic excerpt that underscores the point.",
+      "importance": "Essential — provides theoretical and quasi-psychological account (the ‘how’) of moral transformation.",
+      "themes": [
+        "purity and chastity",
+        "transmutation of sensual energy",
+        "self-discipline as spiritual mechanism"
+      ],
+      "redundancy_risk": "Moderate — overlaps with other passages on purity, but this grouping centrally explains the process and is therefore necessary.",
+      "block_function": "mechanism",
+      "text": "We are conscious of an animal in us, which awakens in proportion as our higher\nnature slumbers. It is reptile and sensual, and perhaps cannot be wholly\nexpelled; like the worms which, even in life and health, occupy our bodies.\nPossibly we may withdraw from it, but never change its nature. I fear that it\nmay enjoy a certain health of its own; that we may be well, yet not pure. The\nother day I picked up the lower jaw of a hog, with white and sound teeth and\ntusks, which suggested that there was an animal health and vigor distinct from\nthe spiritual. This creature succeeded by other means than temperance and\npurity. “That in which men differ from brute beasts,” says Mencius, “is a thing\nvery inconsiderable; the common herd lose it very soon; superior men preserve\nit carefully.” Who knows what sort of life would result if we had attained to\npurity? If I knew so wise a man as could teach me purity I would go to seek him\nforthwith. “A command over our passions, and over the external senses of the\nbody, and good acts, are declared by the Ved to be indispensable in the mind’s\napproximation to God.” Yet the spirit can for the time pervade and control\nevery member and function of the body, and transmute what in form is the\ngrossest sensuality into purity and devotion. The generative energy, which,\nwhen we are loose, dissipates and makes us unclean, when we are continent\ninvigorates and inspires us. Chastity is the flowering of man; and what are\ncalled Genius, Heroism, Holiness, and the like, are but various fruits which\nsucceed it. Man flows at once to God when the channel of purity is open. By\nturns our purity inspires and our impurity casts us down. He is blessed who is\nassured that the animal is dying out in him day by day, and the divine being\nestablished. Perhaps there is none but has cause for shame on account of the\ninferior and brutish nature to which he is allied. I fear that we are such gods\nor demigods only as fauns and satyrs, the divine allied to beasts, the\ncreatures of appetite, and that, to some extent, our very life is our\ndisgrace.—\n\n“How happy’s he who hath due place assigned \nTo his beasts and disafforested his mind! \n* * * * * \nCan use this horse, goat, wolf, and ev’ry beast, \nAnd is not ass himself to all the rest! \nElse man not only is the herd of swine, \nBut he’s those devils too which did incline \nThem to a headlong rage, and made them worse.”\n\nAll sensuality is one, though it takes many forms; all purity is one. It is the\nsame whether a man eat, or drink, or cohabit, or sleep sensually. They are but\none appetite, and we only need to see a person do any one of these things to\nknow how great a sensualist he is. The impure can neither stand nor sit with\npurity. When the reptile is attacked at one mouth of his burrow, he shows\nhimself at another. If you would be chaste, you must be temperate. What is\nchastity? How shall a man know if he is chaste? He shall not know it. We have\nheard of this virtue, but we know not what it is. We speak conformably to the\nrumor which we have heard. From exertion come wisdom and purity; from sloth\nignorance and sensuality. In the student sensuality is a sluggish habit of\nmind. An unclean person is universally a slothful one, one who sits by a stove,\nwhom the sun shines on prostrate, who reposes without being fatigued. If you\nwould avoid uncleanness, and all the sins, work earnestly, though it be at\ncleaning a stable. Nature is hard to be overcome, but she must be overcome.\nWhat avails it that you are Christian, if you are not purer than the heathen,\nif you deny yourself no more, if you are not more religious? I know of many\nsystems of religion esteemed heathenish whose precepts fill the reader with\nshame, and provoke him to new endeavors, though it be to the performance of\nrites merely.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH014-K01-B05",
+      "chapter_id": "CH014",
+      "chapter_title": "Higher Laws",
+      "paragraph_ids": [
+        "CH014-P0017"
+      ],
+      "word_count": 65,
+      "selection_reason": "Concise figurative claim: each man sculpts his body as a temple for the god he worships—captures Thoreau’s view of embodied moral formation and links inner worship to outward self-presentation.",
+      "importance": "High — sharp, definitional aphorism useful for readers to grasp moral anthropology.",
+      "themes": [
+        "body as temple",
+        "self-fashioning",
+        "embodiment of virtue"
+      ],
+      "redundancy_risk": "Low — compact metaphor with unique rhetorical power.",
+      "block_function": "definition",
+      "text": "Every man is the builder of a temple, called his body, to the god he worships,\nafter a style purely his own, nor can he get off by hammering marble instead.\nWe are all sculptors and painters, and our material is our own flesh and blood\nand bones. Any nobleness begins at once to refine a man’s features, any\nmeanness or sensuality to imbrute them.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH014-K01-B06",
+      "chapter_id": "CH014",
+      "chapter_title": "Higher Laws",
+      "paragraph_ids": [
+        "CH014-P0018"
+      ],
+      "word_count": 252,
+      "selection_reason": "A concrete anecdote (John Farmer) illustrating the moment when ordinary labor and sensibility are interrupted by a higher summons—shows how music or a subtle sign can awaken ambition toward a ‘glorious existence’ and practical austerities that redeem the mind and body.",
+      "importance": "Medium — serves as narrative exemplum of the chapter’s abstract claims about hearing and acting on higher promptings.",
+      "themes": [
+        "awakening to higher life",
+        "austerity as method",
+        "migration from ordinary to deliberate life"
+      ],
+      "redundancy_risk": "Low — provides illustrative, narrative closure to the selected doctrinal material.",
+      "block_function": "turning_point",
+      "text": "John Farmer sat at his door one September evening, after a hard day’s work, his\nmind still running on his labor more or less. Having bathed, he sat down to\nre-create his intellectual man. It was a rather cool evening, and some of his\nneighbors were apprehending a frost. He had not attended to the train of his\nthoughts long when he heard some one playing on a flute, and that sound\nharmonized with his mood. Still he thought of his work; but the burden of his\nthought was, that though this kept running in his head, and he found himself\nplanning and contriving it against his will, yet it concerned him very little.\nIt was no more than the scurf of his skin, which was constantly shuffled off.\nBut the notes of the flute came home to his ears out of a different sphere from\nthat he worked in, and suggested work for certain faculties which slumbered in\nhim. They gently did away with the street, and the village, and the state in\nwhich he lived. A voice said to him,—Why do you stay here and live this mean\nmoiling life, when a glorious existence is possible for you? Those same stars\ntwinkle over other fields than these.—But how to come out of this condition and\nactually migrate thither? All that he could think of was to practise some new\nausterity, to let his mind descend into his body and redeem it, and treat\nhimself with ever increasing respect.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    }
+  ]
+}

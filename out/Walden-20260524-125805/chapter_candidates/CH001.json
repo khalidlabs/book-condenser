@@ -1,0 +1,37 @@
+{
+  "chapter_id": "CH001",
+  "chapter_title": "WALDEN",
+  "chapter_contribution_notes": [
+    "Front-matter bibliographic identification (title and author) for provenance and header continuity; minimal selection to preserve book identification without using selection budget for substantive material."
+  ],
+  "omitted_material_description": [
+    "CH001-P0003: Release date and eBook identifier (administrative metadata) — omitted from primary selection budget but listed for provenance.",
+    "CH001-P0004: Language specification — administrative; omitted.",
+    "CH001-P0005: Other information and formats / Gutenberg link — administrative; omitted.",
+    "CH001-P0006: Credits — production credits; omitted."
+  ],
+  "candidate_blocks": [
+    {
+      "block_id": "CH001-K01-B01",
+      "chapter_id": "CH001",
+      "chapter_title": "WALDEN",
+      "paragraph_ids": [
+        "CH001-P0001",
+        "CH001-P0002"
+      ],
+      "word_count": 13,
+      "selection_reason": "Provides the essential bibliographic header (title and author) required for provenance and to maintain continuity with the work’s front matter; minimal and non-substantive, consistent with chapter priorities.",
+      "importance": "low",
+      "themes": [
+        "provenance",
+        "bibliographic identification"
+      ],
+      "redundancy_risk": "low",
+      "block_function": "setup",
+      "text": "Title: Walden, and On The Duty Of Civil Disobedience\n\nAuthor: Henry David Thoreau",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    }
+  ]
+}

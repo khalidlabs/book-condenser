@@ -1,0 +1,81 @@
+{
+  "chapter_id": "CH011",
+  "chapter_title": "The Village",
+  "chapter_contribution_notes": [
+    "Provides representative village scenes that contrast Thoreau’s woods-life with community life, showing social habits (gossip, commerce, public machinery) and an instance of legal coercion that links this local portrait to his broader argument about conscience and the state."
+  ],
+  "omitted_material_description": [
+    "CH011-P0002 (not selected): Extended meditation on walking at night, being lost, and the epistemic consequences of disorientation. Valuable philosophically but omitted here to prioritize social portrait and the arrest anecdote that more directly support the book’s political and social contrasts.",
+    "CH011-P0004 (not selected): Short Latin couplet and translation. A classical epigraphic note that echoes themes of simplicity; omitted to reduce duplication with other epigraphic or poetic fragments elsewhere in the abridgement."
+  ],
+  "candidate_blocks": [
+    {
+      "block_id": "CH011-K01-B01",
+      "chapter_id": "CH011",
+      "chapter_title": "The Village",
+      "paragraph_ids": [
+        "CH011-P0001"
+      ],
+      "word_count": 805,
+      "selection_reason": "A compact, self-contained vignette of the village as a social counterpart to the woods: depicts gossip, public institutions, marketplaces, and the social mechanics that Thoreau observes and resists. This passage serves as a sociological foil to his experiment in simplicity and self-reliance.",
+      "importance": "Moderate — illustrates the social context and temptations to which the Walden experiment is an alternative.",
+      "themes": [
+        "gossip and news culture",
+        "commerce and public institutions",
+        "observation as method",
+        "contrast between village life and woods-life"
+      ],
+      "redundancy_risk": "Low — unique descriptive material and social metaphors not repeated elsewhere in the chapter.",
+      "block_function": "representative_episode",
+      "text": "After hoeing, or perhaps reading and writing, in the forenoon, I usually bathed\nagain in the pond, swimming across one of its coves for a stint, and washed the\ndust of labor from my person, or smoothed out the last wrinkle which study had\nmade, and for the afternoon was absolutely free. Every day or two I strolled to\nthe village to hear some of the gossip which is incessantly going on there,\ncirculating either from mouth to mouth, or from newspaper to newspaper, and\nwhich, taken in homœopathic doses, was really as refreshing in its way as the\nrustle of leaves and the peeping of frogs. As I walked in the woods to see the\nbirds and squirrels, so I walked in the village to see the men and boys;\ninstead of the wind among the pines I heard the carts rattle. In one direction\nfrom my house there was a colony of muskrats in the river meadows; under the\ngrove of elms and buttonwoods in the other horizon was a village of busy men,\nas curious to me as if they had been prairie dogs, each sitting at the mouth of\nits burrow, or running over to a neighbor’s to gossip. I went there frequently\nto observe their habits. The village appeared to me a great news room; and on\none side, to support it, as once at Redding & Company’s on State Street,\nthey kept nuts and raisins, or salt and meal and other groceries. Some have\nsuch a vast appetite for the former commodity, that is, the news, and such\nsound digestive organs, that they can sit forever in public avenues without\nstirring, and let it simmer and whisper through them like the Etesian winds, or\nas if inhaling ether, it only producing numbness and insensibility to\npain,—otherwise it would often be painful to hear,—without affecting the\nconsciousness. I hardly ever failed, when I rambled through the village, to see\na row of such worthies, either sitting on a ladder sunning themselves, with\ntheir bodies inclined forward and their eyes glancing along the line this way\nand that, from time to time, with a voluptuous expression, or else leaning\nagainst a barn with their hands in their pockets, like caryatides, as if to\nprop it up. They, being commonly out of doors, heard whatever was in the wind.\nThese are the coarsest mills, in which all gossip is first rudely digested or\ncracked up before it is emptied into finer and more delicate hoppers within\ndoors. I observed that the vitals of the village were the grocery, the\nbar-room, the post-office, and the bank; and, as a necessary part of the\nmachinery, they kept a bell, a big gun, and a fire-engine, at convenient\nplaces; and the houses were so arranged as to make the most of mankind, in\nlanes and fronting one another, so that every traveller had to run the gantlet,\nand every man, woman, and child might get a lick at him. Of course, those who\nwere stationed nearest to the head of the line, where they could most see and\nbe seen, and have the first blow at him, paid the highest prices for their\nplaces; and the few straggling inhabitants in the outskirts, where long gaps in\nthe line began to occur, and the traveller could get over walls or turn aside\ninto cow paths, and so escape, paid a very slight ground or window tax. Signs\nwere hung out on all sides to allure him; some to catch him by the appetite, as\nthe tavern and victualling cellar; some by the fancy, as the dry goods store\nand the jeweller’s; and others by the hair or the feet or the skirts, as the\nbarber, the shoemaker, or the tailor. Besides, there was a still more terrible\nstanding invitation to call at every one of these houses, and company expected\nabout these times. For the most part I escaped wonderfully from these dangers,\neither by proceeding at once boldly and without deliberation to the goal, as is\nrecommended to those who run the gantlet, or by keeping my thoughts on high\nthings, like Orpheus, who, “loudly singing the praises of the gods to his lyre,\ndrowned the voices of the Sirens, and kept out of danger.” Sometimes I bolted\nsuddenly, and nobody could tell my whereabouts, for I did not stand much about\ngracefulness, and never hesitated at a gap in a fence. I was even accustomed to\nmake an irruption into some houses, where I was well entertained, and after\nlearning the kernels and very last sieve-ful of news, what had subsided, the\nprospects of war and peace, and whether the world was likely to hold together\nmuch longer, I was let out through the rear avenues, and so escaped to the\nwoods again.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH011-K01-B02",
+      "chapter_id": "CH011",
+      "chapter_title": "The Village",
+      "paragraph_ids": [
+        "CH011-P0003"
+      ],
+      "word_count": 398,
+      "selection_reason": "Contains Thoreau’s account of being arrested for refusing to pay a tax—an explicit local anecdote that prefigures and concretely connects to his essay on civil disobedience. It also reinforces his claims about trust, hospitality, and the minimal need for locks in a simple life.",
+      "importance": "High — provides essential evidentiary and narrative link between the village encounter and the wider political argument about state authority.",
+      "themes": [
+        "conscience versus state",
+        "civil disobedience (anecdotal evidence)",
+        "hospitality and trust in simple living",
+        "property and theft as social consequences"
+      ],
+      "redundancy_risk": "Low — specific anecdote that is a direct precursor to the political essay and not duplicated elsewhere in the chapter.",
+      "block_function": "turning_point",
+      "text": "One afternoon, near the end of the first summer, when I went to the village to\nget a shoe from the cobbler’s, I was seized and put into jail, because, as I\nhave elsewhere related, I did not pay a tax to, or recognize the authority of,\nthe state which buys and sells men, women, and children, like cattle at the\ndoor of its senate-house. I had gone down to the woods for other purposes. But,\nwherever a man goes, men will pursue and paw him with their dirty institutions,\nand, if they can, constrain him to belong to their desperate odd-fellow\nsociety. It is true, I might have resisted forcibly with more or less effect,\nmight have run “amok” against society; but I preferred that society should run\n“amok” against me, it being the desperate party. However, I was released the\nnext day, obtained my mended shoe, and returned to the woods in season to get\nmy dinner of huckleberries on Fair-Haven Hill. I was never molested by any\nperson but those who represented the state. I had no lock nor bolt but for the\ndesk which held my papers, not even a nail to put over my latch or windows. I\nnever fastened my door night or day, though I was to be absent several days;\nnot even when the next fall I spent a fortnight in the woods of Maine. And yet\nmy house was more respected than if it had been surrounded by a file of\nsoldiers. The tired rambler could rest and warm himself by my fire, the\nliterary amuse himself with the few books on my table, or the curious, by\nopening my closet door, see what was left of my dinner, and what prospect I had\nof a supper. Yet, though many people of every class came this way to the pond,\nI suffered no serious inconvenience from these sources, and I never missed\nanything but one small book, a volume of Homer, which perhaps was improperly\ngilded, and this I trust a soldier of our camp has found by this time. I am\nconvinced, that if all men were to live as simply as I then did, thieving and\nrobbery would be unknown. These take place only in communities where some have\ngot more than is sufficient while others have not enough. The Pope’s Homers\nwould soon get properly distributed.—",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH011-K01-B03",
+      "chapter_id": "CH011",
+      "chapter_title": "The Village",
+      "paragraph_ids": [
+        "CH011-P0005"
+      ],
+      "word_count": 49,
+      "selection_reason": "A concise moral aphorism (quotation) about governance and virtue that crystallizes the ethical point implied by the village portrait: that rulers should promote virtue rather than punish vice. It functions as a pithy conclusion to the village material.",
+      "importance": "Moderate — supplies a succinct normative claim that bridges local description and moral critique.",
+      "themes": [
+        "governance and moral leadership",
+        "virtue as influence",
+        "ethical pedagogy of rulers"
+      ],
+      "redundancy_risk": "Very low — short, distinctive quotation that serves as an explicit moral claim.",
+      "block_function": "claim",
+      "text": "“You who govern public affairs, what need have you to employ punishments? Love\nvirtue, and the people will be virtuous. The virtues of a superior man are like\nthe wind; the virtues of a common man are like the grass; the grass, when the\nwind passes over it, bends.”",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "chapter_id": "CH019",
+  "chapter_title": "The Pond in Winter",
+  "chapter_contribution_notes": [
+    "Provides sustained winter-season natural observation and practical case studies (sounding the pond, fishing, ice-cutting) that both furnish empirical detail for Thoreau’s epistemic claims about nature and supply the central moral metaphor (depth, bars, coves) that he explicitly maps onto human character and ethics."
+  ],
+  "omitted_material_description": [
+    "Detailed skeptical digressions about Loch Fyne and proportional comparisons that, while interesting, are less central to the chapter’s core metaphor (paragraphs CH019-P0007, CH019-P0008, CH019-P0009).",
+    "A short anecdotal description of primitive fishing markers (CH019-P0004) was deprioritized to keep the selection focused on more argumentative and emblematic passages.",
+    "A brief discussion of possible inlet/outlet experiments and small leach-hole observations (CH019-P0016) omitted as technical aside; its procedural suggestion is nonessential for the chapter’s central claims.",
+    "Certain descriptive asides on ice color and the putrefaction analogy (CH019-P0021) were omitted to preserve budget for the stronger metaphorical and evidentiary paragraphs."
+  ],
+  "candidate_blocks": [
+    {
+      "block_id": "CH019-K01-B01",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0001"
+      ],
+      "word_count": 170,
+      "selection_reason": "Opens the chapter with the author’s waking to winter daylight and frames the day’s observations in a reflective, declarative tone—sets the scene and philosophical posture for the winter pond account.",
+      "importance": "High — orients reader to the chapter’s experiential and philosophical focus.",
+      "themes": [
+        "nature-as-teacher",
+        "deliberate observation",
+        "seasonal framing"
+      ],
+      "redundancy_risk": "Low — unique opening image and tone not repeated elsewhere.",
+      "block_function": "setup",
+      "text": "After a still winter night I awoke with the impression that some question had\nbeen put to me, which I had been endeavoring in vain to answer in my sleep, as\nwhat—how—when—where? But there was dawning Nature, in whom all creatures live,\nlooking in at my broad windows with serene and satisfied face, and no question\non her lips. I awoke to an answered question, to Nature and daylight.\nThe snow lying deep on the earth dotted with young pines, and the very slope of\nthe hill on which my house is placed, seemed to say, Forward! Nature puts no\nquestion and answers none which we mortals ask. She has long ago taken her\nresolution. “O Prince, our eyes contemplate with admiration and transmit to the\nsoul the wonderful and varied spectacle of this universe. The night veils\nwithout doubt a part of this glorious creation; but day comes to reveal to us\nthis great work, which extends from earth even into the plains of the ether.”",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B02",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0002"
+      ],
+      "word_count": 228,
+      "selection_reason": "Vivid, self-contained scene of morning work: cutting through snow and ice to draw water and the striking image of 'heaven under our feet'; demonstrates the practical intimacy with nature central to the experiment.",
+      "importance": "High — supplies concrete evidence of daily self-reliance and close natural perception.",
+      "themes": [
+        "self-reliance",
+        "nature-as-teacher",
+        "sensory detail"
+      ],
+      "redundancy_risk": "Low — concrete episode required to show method of living and perception.",
+      "block_function": "representative_episode",
+      "text": "Then to my morning work. First I take an axe and pail and go in search of\nwater, if that be not a dream. After a cold and snowy night it needed a\ndivining rod to find it. Every winter the liquid and trembling surface of the\npond, which was so sensitive to every breath, and reflected every light and\nshadow, becomes solid to the depth of a foot or a foot and a half, so that it\nwill support the heaviest teams, and perchance the snow covers it to an equal\ndepth, and it is not to be distinguished from any level field. Like the marmots\nin the surrounding hills, it closes its eye-lids and becomes dormant for three\nmonths or more. Standing on the snow-covered plain, as if in a pasture amid the\nhills, I cut my way first through a foot of snow, and then a foot of ice, and\nopen a window under my feet, where, kneeling to drink, I look down into the\nquiet parlor of the fishes, pervaded by a softened light as through a window of\nground glass, with its bright sanded floor the same as in summer; there a\nperennial waveless serenity reigns as in the amber twilight sky, corresponding\nto the cool and even temperament of the inhabitants. Heaven is under our feet\nas well as over our heads.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B03",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0003"
+      ],
+      "word_count": 291,
+      "selection_reason": "Describes winter fishermen as embodied natural practitioners whose skills and economy contrast with town life—supports argument about practical knowledge vs. book learning.",
+      "importance": "Medium-High — gives sociological evidence for alternative knowledge practices and economy.",
+      "themes": [
+        "self-reliance",
+        "critique-of-civilization",
+        "labor"
+      ],
+      "redundancy_risk": "Low — unique ethnographic vignette.",
+      "block_function": "representative_episode",
+      "text": "Early in the morning, while all things are crisp with frost, men come with\nfishing reels and slender lunch, and let down their fine lines through the\nsnowy field to take pickerel and perch; wild men, who instinctively follow\nother fashions and trust other authorities than their townsmen, and by their\ngoings and comings stitch towns together in parts where else they would be\nripped. They sit and eat their luncheon in stout fear-naughts on the dry oak\nleaves on the shore, as wise in natural lore as the citizen is in artificial.\nThey never consulted with books, and know and can tell much less than they have\ndone. The things which they practise are said not yet to be known. Here is one\nfishing for pickerel with grown perch for bait. You look into his pail with\nwonder as into a summer pond, as if he kept summer locked up at home, or knew\nwhere she had retreated. How, pray, did he get these in mid-winter? O, he got\nworms out of rotten logs since the ground froze, and so he caught them. His\nlife itself passes deeper in Nature than the studies of the naturalist\npenetrate; himself a subject for the naturalist. The latter raises the moss and\nbark gently with his knife in search of insects; the former lays open logs to\ntheir core with his axe, and moss and bark fly far and wide. He gets his living\nby barking trees. Such a man has some right to fish, and I love to see Nature\ncarried out in him. The perch swallows the grub-worm, the pickerel swallows the\nperch, and the fisher-man swallows the pickerel; and so all the chinks in the\nscale of being are filled.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B04",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0005"
+      ],
+      "word_count": 240,
+      "selection_reason": "Extended, emblematic description of the Walden pickerel that functions as natural evidence and symbolic material—connects aesthetic perception of creatures to the uniqueness of the place.",
+      "importance": "Medium — supplies memorable natural image and metaphor tying animal life to place.",
+      "themes": [
+        "nature-as-teacher",
+        "aesthetics",
+        "place"
+      ],
+      "redundancy_risk": "Low — particular descriptive passage not repeated elsewhere.",
+      "block_function": "interpretation",
+      "text": "Ah, the pickerel of Walden! when I see them lying on the ice, or in the well\nwhich the fisherman cuts in the ice, making a little hole to admit the water, I\nam always surprised by their rare beauty, as if they were fabulous fishes, they\nare so foreign to the streets, even to the woods, foreign as Arabia to our\nConcord life. They possess a quite dazzling and transcendent beauty which\nseparates them by a wide interval from the cadaverous cod and haddock whose\nfame is trumpeted in our streets. They are not green like the pines, nor gray\nlike the stones, nor blue like the sky; but they have, to my eyes, if possible,\nyet rarer colors, like flowers and precious stones, as if they were the pearls,\nthe animalized nuclei or crystals of the Walden water. They, of course,\nare Walden all over and all through; are themselves small Waldens in the animal\nkingdom, Waldenses. It is surprising that they are caught here,—that in this\ndeep and capacious spring, far beneath the rattling teams and chaises and\ntinkling sleighs that travel the Walden road, this great gold and emerald fish\nswims. I never chanced to see its kind in any market; it would be the cynosure\nof all eyes there. Easily, with a few convulsive quirks, they give up their\nwatery ghosts, like a mortal translated before his time to the thin air of\nheaven.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B05",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0006"
+      ],
+      "word_count": 388,
+      "selection_reason": "Author’s firsthand sounding and measurement of Walden Pond’s depth — concrete empirical case and methodological account that underpins later metaphors and claims about limits of imagination and measurement.",
+      "importance": "High — decisive empirical case supporting the chapter’s claims about depth and symbol.",
+      "themes": [
+        "evidence_and_cases",
+        "method",
+        "nature-as-symbol"
+      ],
+      "redundancy_risk": "Low — central empirical episode; cannot be omitted.",
+      "block_function": "evidence",
+      "text": "As I was desirous to recover the long lost bottom of Walden Pond, I surveyed it\ncarefully, before the ice broke up, early in ’46, with compass and chain and\nsounding line. There have been many stories told about the bottom, or rather no\nbottom, of this pond, which certainly had no foundation for themselves. It is\nremarkable how long men will believe in the bottomlessness of a pond without\ntaking the trouble to sound it. I have visited two such Bottomless Ponds in one\nwalk in this neighborhood. Many have believed that Walden reached quite through\nto the other side of the globe. Some who have lain flat on the ice for a long\ntime, looking down through the illusive medium, perchance with watery eyes into\nthe bargain, and driven to hasty conclusions by the fear of catching cold in\ntheir breasts, have seen vast holes “into which a load of hay might be driven,”\nif there were any body to drive it, the undoubted source of the Styx and\nentrance to the Infernal Regions from these parts. Others have gone down from\nthe village with a “fifty-six” and a wagon load of inch rope, but yet have\nfailed to find any bottom; for while the “fifty-six” was resting by the way,\nthey were paying out the rope in the vain attempt to fathom their truly\nimmeasurable capacity for marvellousness. But I can assure my readers that\nWalden has a reasonably tight bottom at a not unreasonable, though at an\nunusual, depth. I fathomed it easily with a cod-line and a stone weighing about\na pound and a half, and could tell accurately when the stone left the bottom,\nby having to pull so much harder before the water got underneath to help me.\nThe greatest depth was exactly one hundred and two feet; to which may be added\nthe five feet which it has risen since, making one hundred and seven. This is a\nremarkable depth for so small an area; yet not an inch of it can be spared by\nthe imagination. What if all ponds were shallow? Would it not react on the\nminds of men? I am thankful that this pond was made deep and pure for a symbol.\nWhile men believe in the infinite some ponds will be thought to be bottomless.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B06",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0010"
+      ],
+      "word_count": 192,
+      "selection_reason": "Explains how sounding through frozen surface yields precise mapping of the pond’s bottom and reports surprising regularity — shows observational method and its epistemic payoffs.",
+      "importance": "High — supports credibility of the empirical mapping and links method to insight.",
+      "themes": [
+        "method",
+        "observation",
+        "evidence_and_cases"
+      ],
+      "redundancy_risk": "Low — methodological detail not duplicated elsewhere.",
+      "block_function": "mechanism",
+      "text": "As I sounded through the ice I could determine the shape of the bottom with\ngreater accuracy than is possible in surveying harbors which do not freeze\nover, and I was surprised at its general regularity. In the deepest part there\nare several acres more level than almost any field which is exposed to the sun\nwind and plough. In one instance, on a line arbitrarily chosen, the depth did\nnot vary more than one foot in thirty rods; and generally, near the middle, I\ncould calculate the variation for each one hundred feet in any direction\nbeforehand within three or four inches. Some are accustomed to speak of deep\nand dangerous holes even in quiet sandy ponds like this, but the effect of\nwater under these circumstances is to level all inequalities. The regularity of\nthe bottom and its conformity to the shores and the range of the neighboring\nhills were so perfect that a distant promontory betrayed itself in the\nsoundings quite across the pond, and its direction could be determined by\nobserving the opposite shore. Cape becomes bar, and plain shoal, and valley and\ngorge deep water and channel.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B07",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0011"
+      ],
+      "word_count": 168,
+      "selection_reason": "Reports the geometric coincidence (greatest length and breadth intersect at greatest depth) and extrapolates a general rule—an intellectual claim connecting measurement to broader natural regularities.",
+      "importance": "Medium-High — provides a concise generalization useful for the book’s larger metaphors and epistemic claims.",
+      "themes": [
+        "law-and-harmony",
+        "epistemology",
+        "nature-as-symbol"
+      ],
+      "redundancy_risk": "Medium — echoed later in metaphoric form but this is the primary empirical claim.",
+      "block_function": "claim",
+      "text": "When I had mapped the pond by the scale of ten rods to an inch, and put down\nthe soundings, more than a hundred in all, I observed this remarkable\ncoincidence. Having noticed that the number indicating the greatest depth was\napparently in the centre of the map, I laid a rule on the map lengthwise, and\nthen breadthwise, and found, to my surprise, that the line of greatest length\nintersected the line of greatest breadth exactly at the point of\ngreatest depth, notwithstanding that the middle is so nearly level, the outline\nof the pond far from regular, and the extreme length and breadth were got by\nmeasuring into the coves; and I said to myself, Who knows but this hint would\nconduct to the deepest part of the ocean as well as of a pond or puddle? Is not\nthis the rule also for the height of mountains, regarded as the opposite of\nvalleys? We know that a hill is not highest at its narrowest part.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B08",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0014"
+      ],
+      "word_count": 149,
+      "selection_reason": "Reflective paragraph about law, harmony, and the limits of our knowledge—connects natural observation to epistemic humility and the complexity of law.",
+      "importance": "High — important philosophical framing that tempers empirical claims and enriches thematic depth.",
+      "themes": [
+        "epistemology",
+        "limits-of-knowledge",
+        "nature-as-teacher"
+      ],
+      "redundancy_risk": "Low — essential conceptual bridge to ethical metaphor.",
+      "block_function": "interpretation",
+      "text": "If we knew all the laws of Nature, we should need only one fact, or the\ndescription of one actual phenomenon, to infer all the particular results at\nthat point. Now we know only a few laws, and our result is vitiated, not, of\ncourse, by any confusion or irregularity in Nature, but by our ignorance of\nessential elements in the calculation. Our notions of law and harmony are\ncommonly confined to those instances which we detect; but the harmony which\nresults from a far greater number of seemingly conflicting, but really\nconcurring, laws, which we have not detected, is still more wonderful. The\nparticular laws are as our points of view, as, to the traveller, a mountain\noutline varies with every step, and it has an infinite number of profiles,\nthough absolutely but one form. Even when cleft or bored through it is not\ncomprehended in its entireness.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B09",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0015"
+      ],
+      "word_count": 375,
+      "selection_reason": "Explicit ethical metaphor: maps pond features (bars, coves, depth) onto human inclinations, character, and thought—critical link between natural case and moral/philosophical argument.",
+      "importance": "Essential — directly connects Walden experiences to Thoreau’s moral psychology and is key to book’s governing thesis.",
+      "themes": [
+        "higher-laws",
+        "self-reliance",
+        "metaphor"
+      ],
+      "redundancy_risk": "Low — core metaphor; cannot be omitted.",
+      "block_function": "interpretation",
+      "text": "What I have observed of the pond is no less true in ethics. It is the law of\naverage. Such a rule of the two diameters not only guides us toward the sun in\nthe system and the heart in man, but draw lines through the length and breadth\nof the aggregate of a man’s particular daily behaviors and waves of life into\nhis coves and inlets, and where they intersect will be the height or depth of\nhis character. Perhaps we need only to know how his shores trend and his\nadjacent country or circumstances, to infer his depth and concealed bottom. If\nhe is surrounded by mountainous circumstances, an Achillean shore, whose peaks\novershadow and are reflected in his bosom, they suggest a corresponding depth\nin him. But a low and smooth shore proves him shallow on that side. In our\nbodies, a bold projecting brow falls off to and indicates a corresponding depth\nof thought. Also there is a bar across the entrance of our every cove, or\nparticular inclination; each is our harbor for a season, in which we are\ndetained and partially land-locked. These inclinations are not whimsical\nusually, but their form, size, and direction are determined by the promontories\nof the shore, the ancient axes of elevation. When this bar is gradually\nincreased by storms, tides, or currents, or there is a subsidence of the\nwaters, so that it reaches to the surface, that which was at first but an\ninclination in the shore in which a thought was harbored becomes an individual\nlake, cut off from the ocean, wherein the thought secures its own conditions,\nchanges, perhaps, from salt to fresh, becomes a sweet sea, dead sea, or a\nmarsh. At the advent of each individual into this life, may we not suppose that\nsuch a bar has risen to the surface somewhere? It is true, we are such poor\nnavigators that our thoughts, for the most part, stand off and on upon a\nharborless coast, are conversant only with the bights of the bays of poesy, or\nsteer for the public ports of entry, and go into the dry docks of science,\nwhere they merely refit for this world, and no natural currents concur to\nindividualize them.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B10",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0017"
+      ],
+      "word_count": 337,
+      "selection_reason": "Describes physical behavior of ice (undulation, level measurements, rosettes) and perceptual effects—gives technical natural detail that supports the chapter’s claim about delicate observation.",
+      "importance": "Medium — illustrates observational precision and provides striking visual detail.",
+      "themes": [
+        "observation",
+        "sensory-experience",
+        "nature-as-teacher"
+      ],
+      "redundancy_risk": "Medium — technical, but contributes to method theme.",
+      "block_function": "mechanism",
+      "text": "While I was surveying, the ice, which was sixteen inches thick, undulated under\na slight wind like water. It is well known that a level cannot be used on ice.\nAt one rod from the shore its greatest fluctuation, when observed by means of a\nlevel on land directed toward a graduated staff on the ice, was three quarters\nof an inch, though the ice appeared firmly attached to the shore. It was\nprobably greater in the middle. Who knows but if our instruments were delicate\nenough we might detect an undulation in the crust of the earth? When two legs\nof my level were on the shore and the third on the ice, and the sights were\ndirected over the latter, a rise or fall of the ice of an almost infinitesimal\namount made a difference of several feet on a tree across the pond. When I\nbegan to cut holes for sounding, there were three or four inches of water on\nthe ice under a deep snow which had sunk it thus far; but the water began\nimmediately to run into these holes, and continued to run for two days in deep\nstreams, which wore away the ice on every side, and contributed essentially, if\nnot mainly, to dry the surface of the pond; for, as the water ran in, it raised\nand floated the ice. This was somewhat like cutting a hole in the bottom of a\nship to let the water out. When such holes freeze, and a rain succeeds, and\nfinally a new freezing forms a fresh smooth ice over all, it is beautifully\nmottled internally by dark figures, shaped somewhat like a spider’s web, what\nyou may call ice rosettes, produced by the channels worn by the water flowing\nfrom all sides to a centre. Sometimes, also, when the ice was covered with\nshallow puddles, I saw a double shadow of myself, one standing on the head of\nthe other, one on the ice, the other on the trees or hill-side.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B11",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0020"
+      ],
+      "word_count": 437,
+      "selection_reason": "Full account of the ice-cutting enterprise (labor, organization, stacking) — concretely demonstrates social use of the pond and contrasts communal industry with Thoreau’s solitary experiment.",
+      "importance": "High — supplies social-economic evidence and a vivid illustration of human consumption and labor.",
+      "themes": [
+        "economy",
+        "consequence-of-labor",
+        "critique-of-materialism"
+      ],
+      "redundancy_risk": "Low — distinct social vignette necessary to show human impact on nature.",
+      "block_function": "representative_episode",
+      "text": "To speak literally, a hundred Irishmen, with Yankee overseers, came from\nCambridge every day to get out the ice. They divided it into cakes by methods\ntoo well known to require description, and these, being sledded to the shore,\nwere rapidly hauled off on to an ice platform, and raised by grappling irons\nand block and tackle, worked by horses, on to a stack, as surely as so many\nbarrels of flour, and there placed evenly side by side, and row upon row, as if\nthey formed the solid base of an obelisk designed to pierce the clouds. They\ntold me that in a good day they could get out a thousand tons, which was the\nyield of about one acre. Deep ruts and “cradle holes” were worn in the ice, as\non terra firma, by the passage of the sleds over the same track, and the\nhorses invariably ate their oats out of cakes of ice hollowed out like buckets.\nThey stacked up the cakes thus in the open air in a pile thirty-five feet high\non one side and six or seven rods square, putting hay between the outside\nlayers to exclude the air; for when the wind, though never so cold, finds a\npassage through, it will wear large cavities, leaving slight supports or studs\nonly here and there, and finally topple it down. At first it looked like a vast\nblue fort or Valhalla; but when they began to tuck the coarse meadow hay into\nthe crevices, and this became covered with rime and icicles, it looked like a\nvenerable moss-grown and hoary ruin, built of azure-tinted marble, the abode of\nWinter, that old man we see in the almanac,—his shanty, as if he had a design\nto estivate with us. They calculated that not twenty-five per cent of this\nwould reach its destination, and that two or three per cent would be wasted in\nthe cars. However, a still greater part of this heap had a different destiny\nfrom what was intended; for, either because the ice was found not to keep so\nwell as was expected, containing more air than usual, or for some other reason,\nit never got to market. This heap, made in the winter of ’46–7 and estimated to\ncontain ten thousand tons, was finally covered with hay and boards; and though\nit was unroofed the following July, and a part of it carried off, the rest\nremaining exposed to the sun, it stood over that summer and the next winter,\nand was not quite melted till September 1848. Thus the pond recovered the\ngreater part.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH019-K01-B12",
+      "chapter_id": "CH019",
+      "chapter_title": "The Pond in Winter",
+      "paragraph_ids": [
+        "CH019-P0022"
+      ],
+      "word_count": 161,
+      "selection_reason": "Describes aftermath—how the pond recovers after extraction and the return to solitude—provides reflective closure to the chapter’s human/nature interaction episodes.",
+      "importance": "Medium-High — gives moral and ecological consequence, and restores the book’s emphasis on renewal and solitude.",
+      "themes": [
+        "consequence",
+        "renewal",
+        "solitude"
+      ],
+      "redundancy_risk": "Low — important concluding note for the chapter’s narrative arc.",
+      "block_function": "consequence",
+      "text": "Thus for sixteen days I saw from my window a hundred men at work like busy\nhusbandmen, with teams and horses and apparently all the implements of farming,\nsuch a picture as we see on the first page of the almanac; and as often as I\nlooked out I was reminded of the fable of the lark and the reapers, or the\nparable of the sower, and the like; and now they are all gone, and in thirty\ndays more, probably, I shall look from the same window on the pure sea-green\nWalden water there, reflecting the clouds and the trees, and sending up its\nevaporations in solitude, and no traces will appear that a man has ever stood\nthere. Perhaps I shall hear a solitary loon laugh as he dives and plumes\nhimself, or shall see a lonely fisher in his boat, like a floating leaf,\nbeholding his form reflected in the waves, where lately a hundred men securely\nlabored.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    }
+  ]
+}

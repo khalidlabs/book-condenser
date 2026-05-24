@@ -55,6 +55,7 @@ import zipfile
 from collections import Counter
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field
+from datetime import datetime
 from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
@@ -282,6 +283,38 @@ def paragraph_split(text: str) -> list[str]:
 
 def slug_id(prefix: str, index: int) -> str:
     return f"{prefix}{index:03d}"
+
+
+def output_dir_slug(source_stem: str) -> str:
+    """Build a filesystem-safe folder slug from the source book filename."""
+    slug = re.sub(r"[^\w.-]+", "-", source_stem.strip()).strip("-._")
+    slug = re.sub(r"-{2,}", "-", slug)
+    return slug[:80] or "book"
+
+
+def allocate_output_dir(
+    parent: Path,
+    source: Path,
+    *,
+    reuse: bool = False,
+    now: datetime | None = None,
+) -> Path:
+    """Return a run directory under parent, using a unique name unless reuse is requested."""
+    parent = parent.expanduser().resolve()
+    if reuse:
+        parent.mkdir(parents=True, exist_ok=True)
+        return parent
+
+    stamp = (now or datetime.now()).strftime("%Y%m%d-%H%M%S")
+    base = f"{output_dir_slug(source.stem)}-{stamp}"
+    parent.mkdir(parents=True, exist_ok=True)
+    candidate = parent / base
+    suffix = 2
+    while candidate.exists():
+        candidate = parent / f"{base}-{suffix}"
+        suffix += 1
+    candidate.mkdir(parents=False, exist_ok=False)
+    return candidate
 
 
 def canonical_title(title: str) -> str:
@@ -2333,9 +2366,14 @@ def run_pipeline(args: argparse.Namespace) -> Path:
     source = Path(args.input_file).expanduser().resolve()
     if not source.exists():
         raise FileNotFoundError(source)
-    output_dir = Path(args.output_dir).expanduser().resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
-    reset_generated_outputs(output_dir)
+    output_dir = allocate_output_dir(
+        Path(args.output_dir),
+        source,
+        reuse=args.reuse_output_dir,
+    )
+    if args.reuse_output_dir:
+        reset_generated_outputs(output_dir)
+    LOGGER.info("Writing outputs to: %s", output_dir)
 
     LOGGER.info("Loading source book: %s", source)
     book = load_book(source, chapter_map_path=Path(args.chapter_map).expanduser().resolve() if args.chapter_map else None)
@@ -2437,7 +2475,16 @@ def build_arg_parser() -> argparse.ArgumentParser:
         description="Create a rights-cleared, quotation-dominant extractive abridgement of a nonfiction book using the OpenAI API."
     )
     parser.add_argument("input_file", help="Input EPUB, PDF, DOCX, TXT, or Markdown book file.")
-    parser.add_argument("--output-dir", default="abridgement_output", help="Directory for final and intermediate outputs.")
+    parser.add_argument(
+        "--output-dir",
+        default="abridgement_output",
+        help="Parent directory for run outputs. By default, each run creates a unique subfolder here.",
+    )
+    parser.add_argument(
+        "--reuse-output-dir",
+        action="store_true",
+        help="Write directly into --output-dir and replace prior generated artefacts in that folder.",
+    )
     parser.add_argument("--chapter-map", help="Optional JSON chapter map for PDFs without reliable embedded bookmarks. Pages are 1-indexed.")
     parser.add_argument("--parse-only", action="store_true", help="Parse and clean the book, write a structure report, and stop before API calls.")
     parser.add_argument(

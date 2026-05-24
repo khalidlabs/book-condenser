@@ -1,103 +1,221 @@
 # Book Condenser
 
-## Read the Essential Book
+**Create a shorter reading edition of a nonfiction book from the author’s original passages.**
 
-Book Condenser creates an extractive abridgement of a nonfiction book. An AI model identifies the original passages that carry the book's central argument, evidence, concepts, turning points, and conclusions. The software then assembles those passages verbatim into a shorter, beautifully formatted reading edition.
+Book Condenser transforms an EPUB, PDF, DOCX, TXT, or Markdown book into a clean, tablet-friendly PDF abridgement. An AI model identifies the passages that carry the book’s central argument, evidence, concepts, chronology, and conclusions. The program then retrieves those passages from the source and assembles them into a shorter reading edition.
 
-This approach preserves what makes a serious book valuable: the author's reasoning, voice, and choice of evidence. Many nonfiction books develop their core ideas through repetition, extended examples, and supporting detail. By retaining the passages that do the essential intellectual work, Book Condenser makes the book more efficient to read while keeping the reader in direct contact with the original text.
+The result is **shorter than the source, richer than a summary, and faithful to the author’s voice**.
 
-The result is a condensed, tablet-friendly PDF designed for focused reading: shorter than the source, richer than a summary, and faithful to the author.
+> **Preserve the author. Remove the excess.**
 
-This tool is intended for books you own the rights to process, public-domain works, or other material you are legally allowed to transform and store. Generated outputs may contain substantial verbatim source text.
+## How It Works
+
+1. **Recover structure**  
+   The program identifies chapters, reading order, and back matter, while cleaning common extraction artifacts.
+
+2. **Validate the source**  
+   A local structure report checks whether the recovered text is reliable before model-based selection begins.
+
+3. **Select essential passages**  
+   The model determines the nonfiction form and selects coherent original passages that carry the book’s intellectual or narrative arc.
+
+4. **Balance the abridgement**  
+   The program reduces redundancy, protects broad chapter coverage, limits overrepresentation of individual sections, and meets the requested target length.
+
+5. **Produce the reading edition**  
+   The retained source passages are rendered as a professionally formatted, large-type PDF for tablet reading.
+
+The AI acts as an **editorial selector**. The final edition remains grounded in the author’s original text.
 
 ## Features
 
-- Supports EPUB, PDF, DOCX, TXT, and Markdown input.
-- Validates parsing with `--parse-only` before making API calls.
-- Preserves chronology and argument structure through subtype-aware selection rules.
-- Protects broad coverage with `--coverage-mode all` and per-section concentration limits.
-- Produces `reading_abridgement.pdf` as the primary reader-facing output.
-- Writes audit artifacts so users can inspect selected passages, scores, coverage, and quality-control decisions.
+- Supports **EPUB, PDF, DOCX, TXT, and Markdown** input.
+- Recovers structure from EPUB 2, EPUB 3, and text-based PDFs, including imperfect source files.
+- Detects and excludes notes, bibliography, acknowledgments, indexes, and other non-reading matter.
+- Stops before API calls when the parsed structure is unreliable or the source is likely image-only.
+- Adapts passage selection to argumentative, historical, technical, biographical, and mixed nonfiction.
+- Produces a **tablet-optimized PDF** as the primary output.
+- Generates parsing and selection reports for traceability.
+
+## Requirements
+
+You need:
+
+- Python 3.10 or newer.
+- An OpenAI API key for full condensation runs.
+- A source book you are legally allowed to process and store.
+
+Use Book Condenser with public-domain works, your own material, or works for which you have appropriate permission. Generated editions contain substantial source text.
+
+**EPUB is preferred** when available because it usually provides cleaner chapter structure and text than PDF.
 
 ## Installation
 
-From PyPI after release:
+From PyPI, once released:
 
 ```bash
 pip install book-condenser
 ```
 
-For local development from a checkout:
+From a local checkout:
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -e .
 ```
 
-Set your OpenAI API key in the environment before running the full pipeline:
+Set your OpenAI API key:
 
 ```bash
 export OPENAI_API_KEY="your-api-key-here"
 ```
 
-You can also set `OPENAI_MODEL`; otherwise the CLI defaults to `gpt-5-mini`.
+Windows PowerShell:
+
+```powershell
+$env:OPENAI_API_KEY="your-api-key-here"
+```
+
+Optionally choose the model:
+
+```bash
+export OPENAI_MODEL="gpt-5-mini"
+```
+
+When `OPENAI_MODEL` is not set, the CLI uses `gpt-5-mini`.
 
 ## Quick Start
 
-Validate parsing before any API calls:
+### 1. Check the source structure locally
+
+Start with `--parse-only`. It validates the input and creates a report **without sending book text to the API**.
 
 ```bash
-book-condenser path/to/public-domain-book.epub \
-  --output-dir out/example \
+book-condenser path/to/book.epub \
+  --output-dir out \
   --parse-only
 ```
 
-Review `out/example/parsed_structure_report.md`. Continue only if chapter and back-matter detection look plausible.
+Open the generated:
 
-Generate a reading edition:
+```text
+parsed_structure_report.md
+```
+
+Proceed when chapters are detected correctly, back matter is excluded appropriately, and the report indicates that extraction may proceed.
+
+### 2. Generate the condensed reading edition
 
 ```bash
-book-condenser path/to/public-domain-book.epub \
-  --output-dir out/example \
+book-condenser path/to/book.epub \
+  --output-dir out \
   --target-ratio 0.25 \
   --coverage-mode all \
   --chapter-max-share 0.08 \
+  --pdf-font-size 14 \
   --apply-qc
 ```
 
-For PDFs with unreliable bookmarks, provide a manual chapter map:
+A target ratio of `0.25` aims to retain approximately one quarter of the original book’s words.
 
-```bash
-book-condenser path/to/public-domain-book.pdf \
-  --chapter-map examples/chapter_map.json \
-  --output-dir out/example \
-  --parse-only
+The primary output is:
+
+```text
+reading_abridgement.pdf
 ```
 
-The root `book_condenser.py` file is a compatibility launcher. Prefer the installed `book-condenser` command for normal use.
+## PDF Reading Edition
 
-## Key Controls
+The default PDF is designed for comfortable reading on a small tablet:
 
-| Argument | Purpose | Default |
+- 7 × 10 inch portrait pages.
+- Large 14 pt serif body text.
+- Generous line spacing and clean chapter openings.
+- Discreet markers between separated retained passages.
+- Restrained running headers and page numbers.
+
+Useful controls:
+
+| Option | Purpose | Default |
 |---|---|---:|
-| `--target-ratio` | Target proportion of source words retained | `0.25` |
-| `--candidate-ratio` | Candidate pool before global pruning | `0.42` |
-| `--coverage-mode` | Section coverage rule: `all`, `major`, or `none` | `all` |
-| `--chapter-max-share` | Maximum nominal share of final text from one chapter | `0.08` |
-| `--chapter-map` | Manual PDF section/page map when bookmarks are unreliable | none |
-| `--parse-only` | Validate structure and cleanup without API calls | off |
-| `--apply-qc` | Apply final model review within constraints | off |
 | `--pdf-page-size` | `small-tablet`, `a5`, or `large-tablet` | `small-tablet` |
-| `--pdf-font-size` | Body type size between 11 and 20 pt | `14.0` |
+| `--pdf-font-size` | Body font size from 11 to 20 pt | `14` |
 | `--pdf-font` | `auto`, `georgia`, `dejavu serif`, or `times` | `auto` |
 | `--no-docx` | Skip optional DOCX output | off |
 
+For larger text on a small screen:
+
+```bash
+book-condenser path/to/book.epub \
+  --output-dir out \
+  --pdf-font-size 15 \
+  --no-docx \
+  --apply-qc
+```
+
+## Source Format Guidance
+
+### EPUB
+
+EPUB is the recommended input. Book Condenser supports:
+
+- EPUB 2 `toc.ncx` navigation.
+- EPUB 3 navigation documents.
+- Visible-heading recovery when navigation metadata is missing.
+- Anchored subsections and common imperfect EPUB structures.
+
+### PDF
+
+Text-based PDFs are supported. The program uses bookmarks when available and can attempt to recover sections from visible headings.
+
+For a scanned or image-only PDF, run OCR first. When chapter boundaries are unreliable, provide a manual chapter map.
+
+```bash
+book-condenser path/to/book.pdf \
+  --chapter-map examples/chapter_map.json \
+  --output-dir out \
+  --parse-only
+```
+
+Example chapter map:
+
+```json
+[
+  {"title": "Introduction", "start_page": 1, "end_page": 8},
+  {"title": "Chapter One", "start_page": 9},
+  {"title": "Chapter Two", "start_page": 28},
+  {"title": "Bibliography", "start_page": 410}
+]
+```
+
+Back matter remains visible in the structure report but is excluded from passage selection and word budgeting.
+
+## Main Controls
+
+| Argument | Meaning | Default |
+|---|---|---:|
+| `--target-ratio` | Approximate share of source words retained | `0.25` |
+| `--candidate-ratio` | Candidate passage pool before global pruning | `0.42` |
+| `--coverage-mode` | Section coverage rule: `all`, `major`, or `none` | `all` |
+| `--chapter-max-share` | Nominal maximum share from one chapter | `0.08` |
+| `--parse-only` | Validate parsing without API calls | off |
+| `--apply-qc` | Apply final model-based quality review | off |
+| `--chapter-map` | Manual page map for difficult PDFs | none |
+| `--output-dir` | Parent directory for generated run folders | `abridgement_output` |
+| `--reuse-output-dir` | Replace prior generated artifacts in that folder | off |
+
 ## Outputs
 
+A full run creates a folder such as:
+
 ```text
-out/example/
+out/book-<timestamp>/
+    reading_abridgement.pdf
     parsed_structure_report.md
+    selection_audit.md
+    reading_abridgement.md
+    reading_abridgement.docx
     book_metadata.json
     book_paragraphs.jsonl
     structural_overview.json
@@ -105,46 +223,36 @@ out/example/
     scored_candidates.json
     global_selection.json
     quality_control.json
-    selection_audit.md
-    reading_abridgement.md
-    reading_abridgement.pdf
-    reading_abridgement.docx
 ```
 
-`reading_abridgement.pdf` is the primary reading edition. `selection_audit.md` records subtype classification, chapter balance, selected passage functions, scores, protected anchors, and locations.
+Files most users need:
 
-Treat the entire output directory as private by default. It can contain verbatim source text, local paths, and model-generated analysis.
+| File | Purpose |
+|---|---|
+| `reading_abridgement.pdf` | Final tablet-friendly reading edition |
+| `parsed_structure_report.md` | Verification that the source was parsed correctly |
+| `selection_audit.md` | Record of coverage and passage-selection decisions |
+| `reading_abridgement.docx` | Optional editable copy |
 
-## Manual Chapter Map Format
-
-Pages are 1-indexed. `end_page` is optional; when omitted, the next section's `start_page - 1` is used.
-
-```json
-[
-  {"title": "Prologue", "start_page": 1, "end_page": 8},
-  {"title": "Chapter One", "start_page": 9},
-  {"title": "Chapter Two", "start_page": 28},
-  {"title": "Bibliography", "start_page": 410}
-]
-```
-
-Back matter headings are retained in the parse audit but excluded from selection and source-word budgeting.
-
-## Source Format Guidance
-
-Prefer EPUB when available. PDFs may require a manual chapter map and inspection of the parse-only report. If a PDF is scanned or image-only, run OCR first.
-
-The parser supports EPUB 2 `toc.ncx`, EPUB 3 navigation documents, semantic back-matter signals, anchored subsections, PDF bookmarks, visible-heading fallback, and common PDF text cleanup.
+Keep output folders private by default. They may contain verbatim passages, local paths, and model-generated selection analysis.
 
 ## Cost and Privacy
 
-Full runs send selected source excerpts and structural context to the configured OpenAI model. Use `--parse-only` to inspect local parsing before any API calls. Larger books, higher `--candidate-ratio`, and `--apply-qc` increase token usage and cost.
+`--parse-only` runs locally and does not require API calls.
 
-Do not process confidential, copyrighted, or sensitive books unless your API/provider settings and legal rights allow that use.
+A full run sends structural context and source excerpts to the configured OpenAI model. API usage increases with book length, candidate-pool size, and use of final quality-control review.
+
+Do not process confidential or restricted material unless your rights and API/provider settings permit it.
 
 ## Development
 
-Run checks locally:
+Install development dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Run checks:
 
 ```bash
 ruff check .
@@ -153,20 +261,22 @@ python -m build
 twine check dist/*
 ```
 
-The package exposes `book-condenser` as a console script and `python -m book_condenser` as a module entry point.
+The package exposes:
 
-## Release Checklist
+```bash
+book-condenser
+```
 
-1. Confirm the repository root is this project directory, not a parent home directory.
-2. Verify no `.env`, `books/`, `out/`, generated abridgements, or copyrighted fixtures are tracked.
-3. Run `ruff check .`, `pytest`, `python -m build`, and `twine check dist/*`.
-4. Configure PyPI trusted publishing for `khalidlabs/book-condenser` using the `Publish to PyPI` workflow.
-5. Publish a GitHub release or run the publish workflow manually after package install and CLI smoke tests pass.
+and:
+
+```bash
+python -m book_condenser
+```
 
 ## License
 
-Book Condenser is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). Commercial use is not permitted by this license without a separate commercial license from the licensor.
+Book Condenser is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). Commercial use requires a separate commercial license from the licensor.
 
 ## Disclaimer
 
-Book Condenser is provided as-is and does not provide legal advice. You are responsible for ensuring that your source material and generated outputs comply with copyright law, contract terms, platform policies, and any other obligations that apply to your use.
+Book Condenser is provided as-is and does not provide legal advice. You are responsible for ensuring that source material, API use, and generated outputs comply with applicable copyright law, contract terms, platform policies, and other obligations.

@@ -20,7 +20,8 @@ dist/
 site/
 
 # Generated or private book data
-out/
+out/*
+!out/Walden-*/
 books/
 abridgement_output/
 

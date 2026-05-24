@@ -1,0 +1,65 @@
+{
+  "chapter_id": "CH013",
+  "chapter_title": "Baker Farm",
+  "chapter_contribution_notes": [
+    "Preserves the Baker Farm episode’s core local case and Thoreau’s interpretive response: a close, illustrative anecdote (the encounter with John Field) that demonstrates the practical economics of simple living and the moral exhortation that follows—linking the vignette to the book’s central claims about self-reliance, simplicity, and the proper relation to land and labor."
+  ],
+  "omitted_material_description": [
+    "CH013-P0001–P0006, CH013-P0008–P0009: Rich descriptive and lyrical material (extended tree-and-woodland descriptions, brief rainbow vignette, preliminary fishing setup and short poems) omitted to prioritize the chapter’s demonstrative anecdote and its interpretive conclusion. These passages are picturesque and supportive but were deprioritized to meet the requested extract budget and to keep focus on the actionable economy-and-moral content."
+  ],
+  "candidate_blocks": [
+    {
+      "block_id": "CH013-K01-B01",
+      "chapter_id": "CH013",
+      "chapter_title": "Baker Farm",
+      "paragraph_ids": [
+        "CH013-P0007"
+      ],
+      "word_count": 923,
+      "selection_reason": "This single extended anecdote is the chapter’s decisive case: Thoreau’s sustained encounter with John Field demonstrates, through concrete description and dialogue, the economic arithmetic, habits, and consequences of a conventional subsistence life versus the possibility of simpler, self-reliant alternatives. It supplies practical evidence and moral exemplification that tie Baker Farm directly to the book’s governing thesis.",
+      "importance": "High — primary local case and practical demonstration linking labor, consumption, and poverty to the argument for simplicity and self-reliance.",
+      "themes": [
+        "Self-Reliance",
+        "Economy",
+        "Simplicity",
+        "Labor",
+        "Immigrant Experience",
+        "Practical Advice"
+      ],
+      "redundancy_risk": "Low to moderate — overlaps thematically with Economy chapter but offers unique narrative detail and a concrete neighbor-case not duplicated elsewhere.",
+      "block_function": "evidence",
+      "text": "So the Muse fables. But therein, as I found, dwelt now John Field, an Irishman,\nand his wife, and several children, from the broad-faced boy who assisted his\nfather at his work, and now came running by his side from the bog to escape the\nrain, to the wrinkled, sibyl-like, cone-headed infant that sat upon its\nfather’s knee as in the palaces of nobles, and looked out from its home in the\nmidst of wet and hunger inquisitively upon the stranger, with the privilege of\ninfancy, not knowing but it was the last of a noble line, and the hope and\ncynosure of the world, instead of John Field’s poor starveling brat. There we\nsat together under that part of the roof which leaked the least, while it\nshowered and thundered without. I had sat there many times of old before the\nship was built that floated his family to America. An honest, hard-working, but\nshiftless man plainly was John Field; and his wife, she too was brave to cook\nso many successive dinners in the recesses of that lofty stove; with round\ngreasy face and bare breast, still thinking to improve her condition one day;\nwith the never absent mop in one hand, and yet no effects of it visible\nanywhere. The chickens, which had also taken shelter here from the rain,\nstalked about the room like members of the family, too humanized methought to\nroast well. They stood and looked in my eye or pecked at my shoe significantly.\nMeanwhile my host told me his story, how hard he worked “bogging” for a\nneighboring farmer, turning up a meadow with a spade or bog hoe at the rate of\nten dollars an acre and the use of the land with manure for one year, and his\nlittle broad-faced son worked cheerfully at his father’s side the while, not\nknowing how poor a bargain the latter had made. I tried to help him with my\nexperience, telling him that he was one of my nearest neighbors, and that I\ntoo, who came a-fishing here, and looked like a loafer, was getting my living\nlike himself; that I lived in a tight, light, and clean house, which hardly\ncost more than the annual rent of such a ruin as his commonly amounts to; and\nhow, if he chose, he might in a month or two build himself a palace of his own;\nthat I did not use tea, nor coffee, nor butter, nor milk, nor fresh meat, and\nso did not have to work to get them; again, as I did not work hard, I did not\nhave to eat hard, and it cost me but a trifle for my food; but as he began with\ntea, and coffee, and butter, and milk, and beef, he had to work hard to pay for\nthem, and when he had worked hard he had to eat hard again to repair the waste\nof his system,—and so it was as broad as it was long, indeed it was broader\nthan it was long, for he was discontented and wasted his life into the bargain;\nand yet he had rated it as a gain in coming to America, that here you could get\ntea, and coffee, and meat every day. But the only true America is that country\nwhere you are at liberty to pursue such a mode of life as may enable you to do\nwithout these, and where the state does not endeavor to compel you to sustain\nthe slavery and war and other superfluous expenses which directly or indirectly\nresult from the use of such things. For I purposely talked to him as if he were\na philosopher, or desired to be one. I should be glad if all the meadows on the\nearth were left in a wild state, if that were the consequence of men’s\nbeginning to redeem themselves. A man will not need to study history to find\nout what is best for his own culture. But alas! the culture of an Irishman is\nan enterprise to be undertaken with a sort of moral bog hoe. I told him, that\nas he worked so hard at bogging, he required thick boots and stout clothing,\nwhich yet were soon soiled and worn out, but I wore light shoes and thin\nclothing, which cost not half so much, though he might think that I was dressed\nlike a gentleman, (which, however, was not the case,) and in an hour or two,\nwithout labor, but as a recreation, I could, if I wished, catch as many fish as\nI should want for two days, or earn enough money to support me a week. If he\nand his family would live simply, they might all go a-huckleberrying in the\nsummer for their amusement. John heaved a sigh at this, and his wife stared\nwith arms a-kimbo, and both appeared to be wondering if they had capital enough\nto begin such a course with, or arithmetic enough to carry it through. It was\nsailing by dead reckoning to them, and they saw not clearly how to make their\nport so; therefore I suppose they still take life bravely, after their fashion,\nface to face, giving it tooth and nail, not having skill to split its massive\ncolumns with any fine entering wedge, and rout it in detail;—thinking to deal\nwith it roughly, as one should handle a thistle. But they fight at an\noverwhelming disadvantage,—living, John Field, alas! without arithmetic, and\nfailing so.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    },
+    {
+      "block_id": "CH013-K01-B02",
+      "chapter_id": "CH013",
+      "chapter_title": "Baker Farm",
+      "paragraph_ids": [
+        "CH013-P0010",
+        "CH013-P0011",
+        "CH013-P0012",
+        "CH013-P0013",
+        "CH013-P0014"
+      ],
+      "word_count": 539,
+      "selection_reason": "These contiguous paragraphs contain Thoreau’s reflective synthesis immediately following the hut episode: the moral exhortation to seek adventure, to 'enjoy the land, but own it not,' and the concluding, evaluative remarks about John Field and the limits of imported habits. They provide the interpretive bridge from anecdote to general thesis.",
+      "importance": "High — yields the chapter’s explicit moral reading and connects the local episode to the book’s broader prescriptions about deliberate living and property.",
+      "themes": [
+        "Deliberate Living",
+        "Nature-as-Teacher",
+        "Simplicity",
+        "Critique of Property",
+        "Adventure"
+      ],
+      "redundancy_risk": "Low — supplies the episode-specific moralization and exhortation that complete the vignette; while resonant with other passages, this interpretive close is distinctive to Baker Farm.",
+      "block_function": "interpretation",
+      "text": "As I was leaving the Irishman’s roof after the rain, bending my steps again to\nthe pond, my haste to catch pickerel, wading in retired meadows, in sloughs and\nbog-holes, in forlorn and savage places, appeared for an instant trivial to me\nwho had been sent to school and college; but as I ran down the hill toward the\nreddening west, with the rainbow over my shoulder, and some faint tinkling\nsounds borne to my ear through the cleansed air, from I know not what quarter,\nmy Good Genius seemed to say,—Go fish and hunt far and wide day by day,—farther\nand wider,—and rest thee by many brooks and hearth-sides without misgiving.\nRemember thy Creator in the days of thy youth. Rise free from care before the\ndawn, and seek adventures. Let the noon find thee by other lakes, and the night\novertake thee everywhere at home. There are no larger fields than these, no\nworthier games than may here be played. Grow wild according to thy nature, like\nthese sedges and brakes, which will never become English hay. Let the thunder\nrumble; what if it threaten ruin to farmers’ crops? that is not its errand to\nthee. Take shelter under the cloud, while they flee to carts and sheds. Let not\nto get a living be thy trade, but thy sport. Enjoy the land, but own it not.\nThrough want of enterprise and faith men are where they are, buying and\nselling, and spending their lives like serfs.\n\nO Baker Farm!\n\n“Landscape where the richest element \nIs a little sunshine innocent.” * * \n\n“No one runs to revel \nOn thy rail-fenced lea.” * * \n\n“Debate with no man hast thou, \nWith questions art never perplexed, \nAs tame at the first sight as now, \nIn thy plain russet gabardine dressed.” * * \n\n“Come ye who love, \nAnd ye who hate, \nChildren of the Holy Dove, \nAnd Guy Faux of the state, \nAnd hang conspiracies \nFrom the tough rafters of the trees!”\n\nMen come tamely home at night only from the next field or street, where their\nhousehold echoes haunt, and their life pines because it breathes its own breath\nover again; their shadows morning and evening reach farther than their daily\nsteps. We should come home from far, from adventures, and perils, and\ndiscoveries every day, with new experience and character.\n\nBefore I had reached the pond some fresh impulse had brought out John Field,\nwith altered mind, letting go “bogging” ere this sunset. But he, poor man,\ndisturbed only a couple of fins while I was catching a fair string, and he said\nit was his luck; but when we changed seats in the boat luck changed seats too.\nPoor John Field!—I trust he does not read this, unless he will improve by\nit,—thinking to live by some derivative old country mode in this primitive new\ncountry,—to catch perch with shiners. It is good bait sometimes, I allow. With\nhis horizon all his own, yet he a poor man, born to be poor, with his inherited\nIrish poverty or poor life, his Adam’s grandmother and boggy ways, not to rise\nin this world, he nor his posterity, till their wading webbed bog-trotting feet\nget talaria to their heels.",
+      "score": 0.0,
+      "redundant_with": [],
+      "protected_anchor": false
+    }
+  ]
+}
