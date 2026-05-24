@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Create a unique timestamped output subfolder for each abridgement run by default.
+- Add `--reuse-output-dir` to overwrite a fixed output folder when desired.
+- Expand README documentation and include a public-domain Walden EPUB example with sample output artifacts.
+
 ## 0.1.1
 
 - Corrected package metadata links to point to `khalidlabs/book-condenser`.
