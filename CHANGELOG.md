@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.2
+## 0.1.3
 
 - Create a unique timestamped output subfolder for each abridgement run by default.
 - Add `--reuse-output-dir` to overwrite a fixed output folder when desired.
