@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.2.1
+
+### Fixed
+
+- Repair missing `supports` relations for essential major propositions in the analytical map, so synthesis validation no longer fails when the model omits support links.
+
 ## 0.2.0
 
 ### Changed
