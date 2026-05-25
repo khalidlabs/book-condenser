@@ -1692,8 +1692,115 @@ SOURCE PARAGRAPHS:
     return results
 
 
+def _support_link_score(proposition: AnalyticalRequirement, support: AnalyticalRequirement) -> int:
+    score = 0
+    if proposition.preferred_chapter_ids and support.preferred_chapter_ids:
+        score += 10 * len(set(proposition.preferred_chapter_ids) & set(support.preferred_chapter_ids))
+    if proposition.related_claim_ids and support.related_claim_ids:
+        score += 5 * len(set(proposition.related_claim_ids) & set(support.related_claim_ids))
+    return score
+
+
+def repair_analytical_map_support_links(analytical_map: AnalyticalMap) -> AnalyticalMap:
+    """Infer missing supports relations so essential propositions have linked support requirements."""
+    req_by_id = {req.requirement_id: req for req in analytical_map.requirements}
+    support_kinds = {"supporting_argument", "evidence"}
+    support_requirements = [req for req in analytical_map.requirements if req.kind in support_kinds]
+
+    support_sources_by_claim: dict[str, list[str]] = {}
+    relations = list(analytical_map.argument_relations)
+    for relation in relations:
+        if relation.relation == "supports":
+            support_sources_by_claim.setdefault(relation.target_requirement_id, []).append(
+                relation.source_requirement_id
+            )
+
+    essential_proposition_ids = [
+        req.requirement_id
+        for req in analytical_map.requirements
+        if req.kind == "major_proposition" and req.must_be_preserved
+    ]
+    orphan_ids = [pid for pid in essential_proposition_ids if not support_sources_by_claim.get(pid)]
+    if not orphan_ids:
+        return analytical_map
+
+    new_requirements = list(analytical_map.requirements)
+    for proposition_id in orphan_ids:
+        proposition = req_by_id[proposition_id]
+        ranked = sorted(
+            ((_support_link_score(proposition, support), support) for support in support_requirements),
+            key=lambda item: item[0],
+            reverse=True,
+        )
+        best_score, best_support = ranked[0] if ranked else (0, None)
+        if best_support is not None and best_score > 0:
+            relations.append(ArgumentRelation(
+                source_requirement_id=best_support.requirement_id,
+                target_requirement_id=proposition_id,
+                relation="supports",
+            ))
+            support_sources_by_claim.setdefault(proposition_id, []).append(best_support.requirement_id)
+            LOGGER.warning(
+                "Repaired analytical map: linked %s to essential proposition %s via inferred supports relation.",
+                best_support.requirement_id,
+                proposition_id,
+            )
+            continue
+
+        if best_support is not None:
+            relations.append(ArgumentRelation(
+                source_requirement_id=best_support.requirement_id,
+                target_requirement_id=proposition_id,
+                relation="supports",
+            ))
+            support_sources_by_claim.setdefault(proposition_id, []).append(best_support.requirement_id)
+            LOGGER.warning(
+                "Repaired analytical map: linked %s to essential proposition %s (weak chapter/claim overlap).",
+                best_support.requirement_id,
+                proposition_id,
+            )
+            continue
+
+        synthetic_id = f"auto-support-for-{proposition_id}"
+        if synthetic_id in req_by_id:
+            source_id = synthetic_id
+        else:
+            synthetic = AnalyticalRequirement(
+                requirement_id=synthetic_id,
+                kind="supporting_argument",
+                description=(
+                    f"Reasoning or evidence in the source required to establish proposition "
+                    f"{proposition_id}: {proposition.description}"
+                ),
+                importance="essential",
+                related_claim_ids=list(proposition.related_claim_ids),
+                preferred_chapter_ids=list(proposition.preferred_chapter_ids),
+                must_be_preserved=True,
+            )
+            new_requirements.append(synthetic)
+            req_by_id[synthetic_id] = synthetic
+            source_id = synthetic_id
+            LOGGER.warning(
+                "Repaired analytical map: created %s for essential proposition %s with no support requirement.",
+                synthetic_id,
+                proposition_id,
+            )
+        relations.append(ArgumentRelation(
+            source_requirement_id=source_id,
+            target_requirement_id=proposition_id,
+            relation="supports",
+        ))
+        support_sources_by_claim.setdefault(proposition_id, []).append(source_id)
+
+    return analytical_map.model_copy(update={
+        "requirements": new_requirements,
+        "argument_relations": relations,
+    })
+
+
 def validate_analytical_map(analytical_map: AnalyticalMap) -> AnalyticalMap:
     """Validate Adlerian completeness and make support for essential propositions mandatory."""
+    analytical_map = repair_analytical_map_support_links(analytical_map)
     req_by_id = {req.requirement_id: req for req in analytical_map.requirements}
     if len(req_by_id) != len(analytical_map.requirements):
         raise RuntimeError("Analytical map contains duplicate requirement IDs.")

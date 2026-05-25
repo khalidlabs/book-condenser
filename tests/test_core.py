@@ -8,6 +8,8 @@ import pytest
 from book_condenser.core import (
     AnalyticalCoverageAssessment,
     AnalyticalMap,
+    AnalyticalRequirement,
+    ArgumentRelation,
     Book,
     Chapter,
     Paragraph,
@@ -23,6 +25,8 @@ from book_condenser.core import (
     normalize_text,
     output_dir_slug,
     paragraph_split,
+    repair_analytical_map_support_links,
+    validate_analytical_map,
     validate_args,
 )
 
@@ -90,6 +94,74 @@ def block(block_id: str, chapter_id: str, words: int, score: float, paragraph_id
         text="word " * words,
         score=score,
     )
+
+
+def test_repair_analytical_map_links_orphan_proposition() -> None:
+    analytical_map = AnalyticalMap(
+        book_classification="argumentative",
+        central_problem="problem",
+        unity_statement="thesis",
+        requirements=[
+            AnalyticalRequirement(
+                requirement_id="R16",
+                kind="major_proposition",
+                description="An essential claim.",
+                importance="essential",
+                related_claim_ids=["C1"],
+                preferred_chapter_ids=["CH003"],
+                must_be_preserved=True,
+            ),
+            AnalyticalRequirement(
+                requirement_id="S4",
+                kind="supporting_argument",
+                description="Evidence for C1.",
+                importance="important",
+                related_claim_ids=["C1"],
+                preferred_chapter_ids=["CH003"],
+                must_be_preserved=False,
+            ),
+        ],
+        argument_relations=[],
+        minimum_complete_reading_path=["R16", "S4"],
+    )
+
+    repaired = repair_analytical_map_support_links(analytical_map)
+    supports = [
+        rel for rel in repaired.argument_relations
+        if rel.relation == "supports" and rel.target_requirement_id == "R16"
+    ]
+
+    assert len(supports) == 1
+    assert supports[0].source_requirement_id == "S4"
+    validated = validate_analytical_map(analytical_map)
+    assert any(req.requirement_id == "S4" and req.must_be_preserved for req in validated.requirements)
+
+
+def test_repair_analytical_map_creates_synthetic_support_when_none_exist() -> None:
+    analytical_map = AnalyticalMap(
+        book_classification="argumentative",
+        central_problem="problem",
+        unity_statement="thesis",
+        requirements=[
+            AnalyticalRequirement(
+                requirement_id="R16",
+                kind="major_proposition",
+                description="An essential claim.",
+                importance="essential",
+                related_claim_ids=[],
+                preferred_chapter_ids=["CH003"],
+                must_be_preserved=True,
+            ),
+        ],
+        argument_relations=[],
+        minimum_complete_reading_path=["R16"],
+    )
+
+    repaired = repair_analytical_map_support_links(analytical_map)
+    support_ids = {req.requirement_id for req in repaired.requirements if req.kind == "supporting_argument"}
+
+    assert "auto-support-for-R16" in support_ids
+    validate_analytical_map(analytical_map)
 
 
 def test_normalize_text_repairs_known_pdf_artifacts() -> None:
