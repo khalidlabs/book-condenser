@@ -14,17 +14,10 @@ Outputs:
         book_metadata.json
         book_paragraphs.jsonl
         structural_overview.json
-        chapter_analysis/*.json
-        chapter_analyses.json
-        analytical_map.json
         chapter_candidates/*.json
         scored_candidates.json
         global_selection.json
         quality_control.json
-        editorial_transitions.json
-        editorial_transition_validation.json
-        analytical_reading_guide.md
-        selection_audit.md
         reading_abridgement.md
         reading_abridgement.pdf
         reading_abridgement.docx       (unless --no-docx)
@@ -38,14 +31,12 @@ Example:
 
 Design:
     1. Parse the source and assign stable paragraph IDs.
-    2. Perform an inspectional structural overview from the book architecture and framing material.
-    3. Analyse each chapter for terms, propositions, support, qualifications, and contribution to the whole.
-    4. Synthesize an Adlerian analytical map and mandatory reading path.
-    5. Nominate contiguous quotation blocks tagged against analytical requirements.
-    6. Select blocks under budget while protecting essential propositions and their support.
-    7. Check analytical completeness, coherence, and redundancy.
-    8. Generate and validate brief, disclosed editorial transitions where omission creates a discontinuity.
-    9. Assemble exact source quotations and marked editorial transitions into Markdown, PDF, and DOCX; write a separate analytical guide.
+    2. Read the TOC-equivalent chapter list plus introduction and ending material.
+    3. Ask the LLM for a structural overview.
+    4. Ask the LLM to nominate contiguous quotation blocks from each chapter.
+    5. Ask the LLM to score candidate blocks; Python selects blocks under budget.
+    6. Ask the LLM for a final coherence/redundancy review.
+    7. Assemble exact source quotations into Markdown, PDF, and DOCX.
 """
 
 from __future__ import annotations
@@ -70,6 +61,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Literal, TypeVar
 
+from openai import OpenAI
 from pydantic import BaseModel, ConfigDict, Field
 
 LOGGER = logging.getLogger("nonfiction_extractive_condenser")
@@ -143,11 +135,6 @@ class SelectedBlock:
     text: str = ""
     score: float = 0.0
     redundant_with: list[str] = field(default_factory=list)
-    covers_requirement_ids: list[str] = field(default_factory=list)
-    establishes_term_ids: list[str] = field(default_factory=list)
-    supports_proposition_ids: list[str] = field(default_factory=list)
-    requires_prior_requirement_ids: list[str] = field(default_factory=list)
-    protected_requirement_ids: list[str] = field(default_factory=list)
     protected_anchor: bool = False
 
 
@@ -205,53 +192,6 @@ class StructuralOverview(StrictModel):
     selection_rules: list[str]
 
 
-class ChapterAnalyticalMap(StrictModel):
-    analysis_id: str
-    chapter_id: str
-    chapter_title: str
-    chunk_index: int
-    chapter_role: Literal[
-        "problem_setup", "definition", "claim_development", "mechanism", "evidence",
-        "case_study", "objection", "qualification", "synthesis", "conclusion", "mixed"
-    ]
-    questions_addressed: list[str]
-    essential_terms_introduced: list[str]
-    propositions_advanced: list[str]
-    arguments_or_evidence: list[str]
-    limitations_or_qualifications: list[str]
-    dependencies_on_previous_chapters: list[str]
-    contribution_to_book_unity: str
-
-
-class AnalyticalRequirement(StrictModel):
-    requirement_id: str
-    kind: Literal[
-        "central_question", "unity_thesis", "essential_term", "major_proposition",
-        "supporting_argument", "evidence", "counterargument", "limitation",
-        "conclusion", "implication"
-    ]
-    description: str
-    importance: Literal["essential", "important", "supporting"]
-    related_claim_ids: list[str]
-    preferred_chapter_ids: list[str]
-    must_be_preserved: bool
-
-
-class ArgumentRelation(StrictModel):
-    source_requirement_id: str
-    target_requirement_id: str
-    relation: Literal["defines", "supports", "qualifies", "objects_to", "responds_to", "concludes_from"]
-
-
-class AnalyticalMap(StrictModel):
-    book_classification: str
-    central_problem: str
-    unity_statement: str
-    requirements: list[AnalyticalRequirement]
-    argument_relations: list[ArgumentRelation]
-    minimum_complete_reading_path: list[str]
-
-
 class CandidateBlockResponse(StrictModel):
     block_id: str
     paragraph_ids: list[str]
@@ -259,10 +199,6 @@ class CandidateBlockResponse(StrictModel):
         "setup", "definition", "claim", "mechanism", "evidence", "representative_episode",
         "turning_point", "consequence", "counterargument", "interpretation", "conclusion"
     ]
-    covers_requirement_ids: list[str]
-    establishes_term_ids: list[str]
-    supports_proposition_ids: list[str]
-    requires_prior_requirement_ids: list[str]
     selection_reason: str
     importance: str
     themes: list[str]
@@ -282,13 +218,6 @@ class ScoredBlockResponse(StrictModel):
     institutional_causal_or_argumentative_importance: int = Field(ge=0, le=5)
     turning_point_or_conclusion_value: int = Field(ge=0, le=5)
     explanatory_density: int = Field(ge=0, le=5)
-    unity_value: int = Field(ge=0, le=5)
-    term_definition_value: int = Field(ge=0, le=5)
-    proposition_value: int = Field(ge=0, le=5)
-    argument_support_value: int = Field(ge=0, le=5)
-    objection_or_limitation_value: int = Field(ge=0, le=5)
-    conclusion_value: int = Field(ge=0, le=5)
-    analytical_dependency_value: int = Field(ge=0, le=5)
     readability: int = Field(ge=0, le=3)
     redundancy_penalty: int = Field(ge=0, le=5)
     excessive_detail_penalty: int = Field(ge=0, le=5)
@@ -306,57 +235,12 @@ class TransitionNote(StrictModel):
     note: str
 
 
-class AnalyticalCoverageAssessment(StrictModel):
-    unity_preserved: bool
-    essential_terms_preserved: bool
-    major_propositions_preserved: bool
-    supporting_arguments_preserved: bool
-    objections_or_limitations_preserved: bool
-    conclusion_preserved: bool
-    missing_requirement_ids: list[str]
-    unsupported_proposition_ids: list[str]
-    undefined_term_ids: list[str]
-
-
 class QualityControlResponse(StrictModel):
     assessment: str
-    analytical_coverage: AnalyticalCoverageAssessment
     missing_coverage: list[str]
     remove_block_ids: list[str]
     add_block_ids: list[str]
     transition_notes: list[TransitionNote]
-
-
-class EditorialTransition(StrictModel):
-    before_block_id: str
-    after_block_id: str
-    transition_type: Literal[
-        "omission_bridge", "logical_bridge", "chronological_bridge", "terminological_reminder"
-    ]
-    text: str
-    necessary: bool
-    grounding_block_ids: list[str]
-    grounding_requirement_ids: list[str]
-    rationale: str
-
-
-class EditorialTransitionResponse(StrictModel):
-    transitions: list[EditorialTransition]
-
-
-class TransitionValidation(StrictModel):
-    before_block_id: str
-    after_block_id: str
-    grounded: bool
-    introduces_new_claim: bool
-    impersonates_author: bool
-    overly_explanatory: bool
-    approved_text: str
-    reason: str
-
-
-class TransitionValidationResponse(StrictModel):
-    validations: list[TransitionValidation]
 
 
 # ---------------------------------------------------------------------------
@@ -465,7 +349,10 @@ def classify_chapter(title: str) -> str:
 
 def safe_json_dump(data: Any, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = model_dump_jsonable(data)
+    if isinstance(data, BaseModel):
+        payload = data.model_dump()
+    else:
+        payload = data
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
@@ -1400,13 +1287,6 @@ class LLM:
                 "OPENAI_API_KEY is not set. Set it in your environment before running the full pipeline, "
                 "or use --parse-only to validate a source without API calls."
             )
-        try:
-            from openai import OpenAI
-        except ImportError as exc:
-            raise ImportError(
-                "The full pipeline requires the current OpenAI Python SDK. "
-                "Install or upgrade it with: pip install --upgrade openai"
-            ) from exc
         self.client = OpenAI()
         self.model = model
         self.retries = retries
@@ -1503,108 +1383,52 @@ def split_paragraph_ids_by_words(book: Book, paragraph_ids: Sequence[str], max_w
     return chunks
 
 
-OVERVIEW_SYSTEM = """You are performing an inspectional first pass for an extractive abridgement of a rights-cleared nonfiction book.
+OVERVIEW_SYSTEM = """You are the structural editor for an extractive abridgement of a rights-cleared nonfiction book.
 Your output is analytical metadata only; exact original prose will be selected later.
 
-Classify the work into exactly one nonfiction form: argumentative, historical_investigative_narrative,
-biography_memoir, technical_explanatory, case_based_policy_business, or mixed.
+First classify the work into exactly one nonfiction form:
+argumentative, historical_investigative_narrative, biography_memoir, technical_explanatory,
+case_based_policy_business, or mixed.
 
-Using the section list, opening material, and ending material, identify the governing question, provisional thesis,
-and broad chronological or logical arc. Assign chapter priorities. This overview is provisional: later chapter-level
-analysis must confirm the author's terms, propositions, supporting arguments, evidence, qualifications, and conclusion.
-Do not allow opening setup or concluding interpretation to disappear because middle material is more vivid."""
-
-CHAPTER_ANALYSIS_SYSTEM = """You are performing the analytical-reading pass for one chapter chunk of a rights-cleared nonfiction book.
-Your output is analytical metadata only. Do not quote or rewrite the source.
-
-Determine what intellectual function this material performs in the book. Identify questions it addresses, terms it
-introduces or clarifies, propositions it advances, reasoning or evidence that supports propositions, qualifications or
-limitations, dependencies on earlier material, and its contribution to the unity of the book. Do not treat a vivid
-example as a core proposition unless the author uses it to advance the central analysis."""
-
-ANALYTICAL_MAP_SYSTEM = """You are synthesizing an Adlerian analytical map for a nonfiction book from a provisional overview and
-chapter-level analyses. Your output is analytical metadata only; exact source passages will be selected later.
-
-Represent the minimum original material a serious reader must retain in order to reconstruct the author's analysis.
-Create requirements for: the central question; unity or governing thesis; essential terms in the author's usage; major
-propositions; the argument, mechanism, or evidence required for each essential proposition; substantive objections,
-limitations, or qualifications; and the concluding answer or implications.
-
-Requirements marked must_be_preserved are hard coverage obligations. Every essential major proposition must have at
-least one associated supporting_argument or evidence requirement connected through a supports relation. The
-minimum_complete_reading_path must give requirement IDs in the order in which a condensed reader needs them. Use
-chapter IDs exactly as supplied. Keep the map discriminating: do not make every illustrative detail essential."""
+Study the section list, opening material, and ending material. Identify the governing question and thesis,
+then map the chronological or logical arc in reading order. Determine what each chapter contributes and
+assign selection priorities. For historical or investigative narrative, prioritize chronological development,
+institutional change, principal actors only where they drive events, turning points, causes, consequences,
+and the author's final interpretation. For argumentative or technical works, prioritize claims, concepts,
+mechanisms, evidence, objections, and conclusions. Use chapter IDs exactly as supplied. Do not allow early
+setup chapters or the concluding interpretation to disappear merely because middle episodes are dramatic."""
 
 BASE_CHAPTER_SYSTEM = """You are selecting source passages for a full extractive abridgement of a rights-cleared nonfiction book.
-Return paragraph identifiers and analytical tags only; never quote, paraphrase, rewrite, merge, or complete source text.
+Return paragraph identifiers only; never quote, paraphrase, rewrite, merge, or complete source text.
 The application retrieves exact original wording after your selection.
 
-The objective is to preserve the reader's ability to reconstruct the author's analysis. Each nominated passage must
-state which analytical requirements it covers. Do not nominate a conclusion alone when the source material here contains
-reasoning, evidence, definition, qualification, or objection-response material required to understand why the conclusion
-is reached.
+READABILITY IS A HARD CONSTRAINT. Each selected block must be a self-contained reading passage, normally
+200 to 1,200 words. Start where the author introduces a claim, event, case, mechanism, or interpretation;
+do not start mid-response, mid-anecdote, or with unresolved referents. End after the local point or event is
+completed. Prefer several compact complete passages over one long episode. Do not select bibliography,
+reference material, interviews lists, photo inserts, captions, publisher notices, or page furniture.
 
-READABILITY IS A HARD CONSTRAINT. Each selected block must be a self-contained reading passage, normally 200 to
-1,200 words. Start where the author introduces a claim, event, definition, mechanism, evidence, or interpretation; do
-not start mid-response, mid-anecdote, or with unresolved referents. End after the local point or event is completed.
-Prefer several compact complete passages over one long episode. Do not select bibliography, reference material,
-interviews lists, photo inserts, captions, publisher notices, or page furniture.
+Each selected block must be assigned one function: setup, definition, claim, mechanism, evidence,
+representative_episode, turning_point, consequence, counterargument, interpretation, or conclusion.
 
-Each block must be assigned one function: setup, definition, claim, mechanism, evidence, representative_episode,
-turning_point, consequence, counterargument, interpretation, or conclusion. Populate covers_requirement_ids only with
-requirement IDs supplied in the analytical map. Populate establishes_term_ids with essential-term requirement IDs that
-the passage defines or makes intelligible. Populate supports_proposition_ids with major-proposition requirement IDs for
-which the passage supplies reasoning or evidence. Populate requires_prior_requirement_ids when the passage would be
-unclear without an earlier requirement.
+This is the candidate stage. Nominate approximately the requested share of the supplied chapter/chunk.
+A later global stage controls balance, removes redundancy, and enforces the final book-level word budget.
+Every block ID must begin with the supplied prefix. Every paragraph ID must come from the supplied input."""
 
-This is the candidate stage. Nominate approximately the requested share of the supplied chapter/chunk. A later global
-stage enforces analytical coverage, removes redundancy, and controls the final word budget. Every block ID must begin
-with the supplied prefix. Every paragraph ID must come from the supplied input."""
+SCORING_SYSTEM = """You are ranking candidate quotation blocks for a readable extractive abridgement.
+Your output is analytical metadata only; do not reproduce quotation text. Score each supplied block exactly
+once. Reward passages that are necessary to reconstruct the book's chronological or logical arc, establish
+causes or arguments, mark decisive turns or conclusions, and read coherently when extracted. Penalize blocks
+that duplicate another passage, contain excessive episode-level detail relative to their importance, or require
+omitted context to make sense. Identify substantial redundancy using candidate block IDs."""
 
-SCORING_SYSTEM = """You are ranking candidate quotation blocks for an analytically readable extractive abridgement.
-Your output is analytical metadata only; do not reproduce quotation text. Score each supplied block exactly once.
-Reward passages that preserve the unity of the book, establish essential terms, express major propositions, provide the
-reasoning or evidence required for propositions, preserve substantive limitations or objections, complete the conclusion,
-and remain readable when extracted. Also consider chronological or causal necessity for narrative works. Penalize
-redundancy, excessive local detail, and unresolved dependence on omitted context. Identify substantial redundancy using
-candidate block IDs."""
-
-QC_SYSTEM = """You are performing final analytical quality control on a proposed extractive abridgement.
-Do not rewrite quotations and do not invent block IDs or requirement IDs. Determine whether the retained verbatim
-passages enable a serious reader to reconstruct the author's analysis.
-
-Specifically assess whether the retained selection preserves: (1) the central problem and governing thesis; (2) the
-structure of the author's answer; (3) essential terminology in the author's usage; (4) each essential major proposition;
-(5) sufficient reasoning, evidence, or mechanism for each essential proposition; (6) substantive objections,
-limitations, or qualifications; and (7) the concluding answer or implications. Do not approve a selection that retains a
-major conclusion while omitting the reasoning required to understand it. Recommend removals only for genuine redundancy,
-excessive detail, or unreadability, and additions only from the supplied available candidates. A block protected for an
-analytical requirement should not be removed unless another retained block preserves that requirement. Transition notes
-are audit comments used to inform the subsequent editorial-transition stage."""
-
-TRANSITION_SYSTEM = """You are writing minimal editorial transitions for a condensed reading edition of a rights-cleared
-nonfiction book. The retained passages are verbatim source text. Any transition that appears in the edition is visibly
-labelled editorial text and must not imitate or be presented as the author's prose.
-
-Write a transition only when omission creates a material continuity problem. A transition may identify that intervening
-discussion, examples, or events have been omitted; state the logical movement between retained passages when grounded in
-the supplied analytical map; orient the reader across a chronological shift; or briefly recall a term already established.
-It must not add facts, claims, evidence, or evaluation not supported by the supplied passages or analytical requirements.
-It must not replace omitted argument with a generated summary or quote the source. In minimal mode, omit a transition
-whenever the next retained passage is intelligible without one. In guided mode, a brief orientation bridge may be used
-where it materially clarifies the analytical reading path.
-
-Return exactly one record for each supplied candidate gap. If no transition is needed, set necessary to false and text to
-an empty string. Use only supplied block IDs and requirement IDs."""
-
-TRANSITION_VALIDATION_SYSTEM = """You are validating reader-visible editorial transitions in an extractive condensed
-edition. Approve only transitions that are minimal, visibly editorial in function, and fully grounded in the supplied
-retained passages and analytical map. A transition should orient the reader across an omission; it must not substitute
-AI-authored substantive content for removed source prose.
-
-Reject or shorten a transition if it adds a factual or interpretive claim not supported by the supplied material,
-summarizes omitted evidence or argument in substantive detail, evaluates the author, imitates authorial prose, or is
-longer than necessary. Return an empty approved_text when it should not appear."""
+QC_SYSTEM = """You are performing final editorial quality control on a proposed extractive abridgement.
+Do not rewrite quotations and do not invent block IDs. Check whether the retained passages represent the
+book's complete chronological or logical arc; preserve setup, decisive developments, consequences, and
+conclusion. Recommend removals only for genuine redundancy, excessive detail, or unreadability, and additions
+only for missing coverage. A protected chapter anchor should not be removed unless another retained block from
+that same chapter already preserves its essential function. Transition notes are audit comments only and must
+not appear in the reading edition."""
 
 
 def mode_guidance(nonfiction_form: str) -> str:
@@ -1643,141 +1467,15 @@ def create_structural_overview(
     max_structural_words: int,
     output_dir: Path,
 ) -> StructuralOverview:
-    LOGGER.info("Generating inspectional structural overview.")
+    LOGGER.info("Generating structural overview.")
     user_input = overview_input(book, emphasis, max_structural_words)
     overview = llm.structured(OVERVIEW_SYSTEM, user_input, StructuralOverview)
     safe_json_dump(overview, output_dir / "structural_overview.json")
     return overview
 
 
-def create_chapter_analyses(
-    llm: LLM,
-    book: Book,
-    overview: StructuralOverview,
-    chapter_chunk_words: int,
-    output_dir: Path,
-) -> list[ChapterAnalyticalMap]:
-    """Read each included chapter chunk for its analytical function before extracting passages."""
-    results: list[ChapterAnalyticalMap] = []
-    analysis_dir = output_dir / "chapter_analysis"
-    for chapter in [c for c in book.chapters if c.kind != "exclude"]:
-        chunks = split_paragraph_ids_by_words(book, chapter.paragraph_ids, chapter_chunk_words)
-        LOGGER.info("Analysing intellectual structure of %s (%d chunk(s)).", chapter.title, len(chunks))
-        for chunk_index, para_ids in enumerate(chunks, start=1):
-            analysis_id = f"{chapter.chapter_id}-A{chunk_index:02d}"
-            text = f"""PROVISIONAL BOOK OVERVIEW:
-{overview.model_dump_json(indent=2)}
-
-CHAPTER CHUNK TO ANALYSE:
-Analysis ID: {analysis_id}
-Chapter ID: {chapter.chapter_id}
-Chapter title: {chapter.title}
-Chunk: {chunk_index} of {len(chunks)}
-
-SOURCE PARAGRAPHS:
-{render_paragraphs(book, para_ids)}
-"""
-            result = llm.structured(CHAPTER_ANALYSIS_SYSTEM, text, ChapterAnalyticalMap)
-            if result.chapter_id != chapter.chapter_id or result.analysis_id != analysis_id:
-                LOGGER.warning("Normalising returned analysis identifiers for %s.", analysis_id)
-                result = result.model_copy(update={
-                    "analysis_id": analysis_id,
-                    "chapter_id": chapter.chapter_id,
-                    "chapter_title": chapter.title,
-                    "chunk_index": chunk_index,
-                })
-            results.append(result)
-            safe_json_dump(result, analysis_dir / f"{analysis_id}.json")
-    safe_json_dump(results, output_dir / "chapter_analyses.json")
-    return results
-
-
-def validate_analytical_map(analytical_map: AnalyticalMap) -> AnalyticalMap:
-    """Validate Adlerian completeness and make support for essential propositions mandatory."""
-    req_by_id = {req.requirement_id: req for req in analytical_map.requirements}
-    if len(req_by_id) != len(analytical_map.requirements):
-        raise RuntimeError("Analytical map contains duplicate requirement IDs.")
-    unknown_path = [x for x in analytical_map.minimum_complete_reading_path if x not in req_by_id]
-    if unknown_path:
-        raise RuntimeError(f"Analytical map contains unknown reading-path requirement IDs: {unknown_path}")
-    for relation in analytical_map.argument_relations:
-        if relation.source_requirement_id not in req_by_id or relation.target_requirement_id not in req_by_id:
-            raise RuntimeError(f"Analytical map relation references unknown requirement: {relation.model_dump()}")
-
-    support_sources_by_claim: dict[str, list[str]] = {}
-    for relation in analytical_map.argument_relations:
-        if relation.relation == "supports":
-            support_sources_by_claim.setdefault(relation.target_requirement_id, []).append(relation.source_requirement_id)
-
-    amended: list[AnalyticalRequirement] = []
-    essential_proposition_ids = {
-        req.requirement_id for req in analytical_map.requirements
-        if req.kind == "major_proposition" and req.must_be_preserved
-    }
-    for proposition_id in essential_proposition_ids:
-        sources = support_sources_by_claim.get(proposition_id, [])
-        if not sources:
-            raise RuntimeError(
-                f"Essential proposition {proposition_id} has no mapped supporting_argument or evidence requirement."
-            )
-        invalid = [sid for sid in sources if req_by_id[sid].kind not in {"supporting_argument", "evidence"}]
-        if invalid:
-            raise RuntimeError(
-                f"Essential proposition {proposition_id} is supported by non-support requirements: {invalid}"
-            )
-
-    required_support_ids = {
-        source_id for proposition_id in essential_proposition_ids
-        for source_id in support_sources_by_claim.get(proposition_id, [])
-    }
-    for req in analytical_map.requirements:
-        if req.requirement_id in required_support_ids and not req.must_be_preserved:
-            amended.append(req.model_copy(update={"must_be_preserved": True, "importance": "essential"}))
-        else:
-            amended.append(req)
-    return analytical_map.model_copy(update={"requirements": amended})
-
-
-def create_analytical_map(
-    llm: LLM,
-    book: Book,
-    overview: StructuralOverview,
-    chapter_analyses: list[ChapterAnalyticalMap],
-    output_dir: Path,
-) -> AnalyticalMap:
-    """Synthesize hard analytical preservation requirements from chapter-level reading."""
-    chapter_manifest = "\n".join(
-        f"- {c.chapter_id}: {c.title} ({c.word_count} words; kind={c.kind})"
-        for c in book.chapters if c.kind != "exclude"
-    )
-    input_text = f"""BOOK TITLE: {book.title}
-
-CHAPTER MANIFEST:
-{chapter_manifest}
-
-PROVISIONAL STRUCTURAL OVERVIEW:
-{overview.model_dump_json(indent=2)}
-
-CHAPTER-LEVEL ANALYTICAL MAPS:
-{json.dumps([x.model_dump() for x in chapter_analyses], indent=2, ensure_ascii=False)}
-"""
-    LOGGER.info("Synthesizing Adlerian analytical map.")
-    analytical_map = llm.structured(ANALYTICAL_MAP_SYSTEM, input_text, AnalyticalMap)
-    analytical_map = validate_analytical_map(analytical_map)
-    safe_json_dump(analytical_map, output_dir / "analytical_map.json")
-    return analytical_map
-
-
 def candidate_text_budget(chapter: Chapter, candidate_ratio: float) -> int:
     return max(120, int(chapter.word_count * candidate_ratio))
-
-
-def requirements_for_chapter(analytical_map: AnalyticalMap, chapter_id: str) -> list[AnalyticalRequirement]:
-    local = [
-        req for req in analytical_map.requirements
-        if not req.preferred_chapter_ids or chapter_id in req.preferred_chapter_ids
-    ]
-    return local or analytical_map.requirements
 
 
 def select_candidates_for_chapter(
@@ -1785,7 +1483,6 @@ def select_candidates_for_chapter(
     book: Book,
     chapter: Chapter,
     overview: StructuralOverview,
-    analytical_map: AnalyticalMap,
     emphasis: str,
     candidate_ratio: float,
     chapter_chunk_words: int,
@@ -1795,21 +1492,14 @@ def select_candidates_for_chapter(
     blocks: list[SelectedBlock] = []
     chapter_function_notes: list[str] = []
     omitted_notes: list[str] = []
-    local_requirements = requirements_for_chapter(analytical_map, chapter.chapter_id)
 
-    LOGGER.info("Selecting analytically tagged candidate blocks for %s (%d chunk(s)).", chapter.title, len(chunks))
+    LOGGER.info("Selecting candidate blocks for %s (%d chunk(s)).", chapter.title, len(chunks))
     for chunk_index, para_ids in enumerate(chunks, start=1):
         chunk_words = sum(book.paragraphs[pid].word_count for pid in para_ids)
         requested_words = max(100, int(chunk_words * candidate_ratio))
         prefix = f"{chapter.chapter_id}-K{chunk_index:02d}-B"
         input_text = f"""BOOK STRUCTURAL OVERVIEW:
 {overview.model_dump_json(indent=2)}
-
-ANALYTICAL REQUIREMENTS RELEVANT TO THIS CHAPTER:
-{json.dumps([x.model_dump() for x in local_requirements], indent=2, ensure_ascii=False)}
-
-MINIMUM COMPLETE READING PATH:
-{', '.join(analytical_map.minimum_complete_reading_path)}
 
 READING EMPHASIS:
 {emphasis}
@@ -1840,14 +1530,18 @@ SOURCE PARAGRAPHS:
 
         para_set = set(para_ids)
         source_order = {pid: ix for ix, pid in enumerate(para_ids)}
-        permitted_requirement_ids = {req.requirement_id for req in analytical_map.requirements}
         output_block_counter = 0
         for block in response.candidate_blocks:
             valid_ids = [pid for pid in block.paragraph_ids if pid in para_set]
             if not valid_ids:
                 LOGGER.warning("Ignoring block with no valid paragraph IDs: %s", block.block_id)
                 continue
+
             ordered_ids = sorted(set(valid_ids), key=lambda pid: source_order[pid])
+
+            # A quotation block must be contiguous in the original source. If the
+            # model nominates separated paragraphs, preserve integrity by splitting
+            # them into independent blocks rather than silently removing intervening text.
             runs: list[list[str]] = []
             current_run: list[str] = []
             previous_position: int | None = None
@@ -1880,10 +1574,6 @@ SOURCE PARAGRAPHS:
                         redundancy_risk=block.redundancy_risk,
                         block_function=block.block_function,
                         text=exact_text,
-                        covers_requirement_ids=[x for x in block.covers_requirement_ids if x in permitted_requirement_ids],
-                        establishes_term_ids=[x for x in block.establishes_term_ids if x in permitted_requirement_ids],
-                        supports_proposition_ids=[x for x in block.supports_proposition_ids if x in permitted_requirement_ids],
-                        requires_prior_requirement_ids=[x for x in block.requires_prior_requirement_ids if x in permitted_requirement_ids],
                     )
                 )
 
@@ -1902,21 +1592,20 @@ def all_candidate_blocks(
     llm: LLM,
     book: Book,
     overview: StructuralOverview,
-    analytical_map: AnalyticalMap,
     emphasis: str,
     candidate_ratio: float,
     chapter_chunk_words: int,
     output_dir: Path,
 ) -> list[SelectedBlock]:
+    included = [c for c in book.chapters if c.kind != "exclude"]
     candidates: list[SelectedBlock] = []
-    for chapter in [c for c in book.chapters if c.kind != "exclude"]:
+    for chapter in included:
         candidates.extend(
             select_candidates_for_chapter(
                 llm=llm,
                 book=book,
                 chapter=chapter,
                 overview=overview,
-                analytical_map=analytical_map,
                 emphasis=emphasis,
                 candidate_ratio=candidate_ratio,
                 chapter_chunk_words=chapter_chunk_words,
@@ -1934,13 +1623,12 @@ def score_candidates(
     llm: LLM,
     candidates: list[SelectedBlock],
     overview: StructuralOverview,
-    analytical_map: AnalyticalMap,
     score_batch_size: int,
     output_dir: Path,
 ) -> list[SelectedBlock]:
-    LOGGER.info("Scoring %d candidate blocks against analytical requirements.", len(candidates))
+    LOGGER.info("Scoring %d candidate blocks.", len(candidates))
     manifest = "\n".join(
-        f"{b.block_id} | {b.chapter_id} | words={b.word_count} | covers={','.join(b.covers_requirement_ids)} | supports={','.join(b.supports_proposition_ids)} | reason={b.selection_reason}"
+        f"{b.block_id} | {b.chapter_id} | words={b.word_count} | themes={', '.join(b.themes)} | reason={b.selection_reason}"
         for b in candidates
     )
     scores_by_id: dict[str, ScoredBlockResponse] = {}
@@ -1949,16 +1637,12 @@ def score_candidates(
         batch = candidates[start : start + score_batch_size]
         supplied = "\n\n".join(
             f"BLOCK {b.block_id}\nChapter: {b.chapter_id}: {b.chapter_title}\nWords: {b.word_count}\n"
-            f"Function: {b.block_function}\nCovers: {', '.join(b.covers_requirement_ids)}\nDefines terms: {', '.join(b.establishes_term_ids)}\n"
-            f"Supports propositions: {', '.join(b.supports_proposition_ids)}\nRequires prior: {', '.join(b.requires_prior_requirement_ids)}\n"
-            f"Initial importance: {b.importance}\nReason: {b.selection_reason}\nThemes: {', '.join(b.themes)}\nSource preview:\n{block_preview(b)}"
+            f"Function: {b.block_function}\nInitial importance: {b.importance}\nReason: {b.selection_reason}\nThemes: {', '.join(b.themes)}\n"
+            f"Source preview:\n{block_preview(b)}"
             for b in batch
         )
         user_input = f"""STRUCTURAL OVERVIEW:
 {overview.model_dump_json(indent=2)}
-
-ANALYTICAL MAP:
-{analytical_map.model_dump_json(indent=2)}
 
 COMPLETE CANDIDATE MANIFEST FOR REDUNDANCY REFERENCE:
 {truncate_words(manifest, 7000)}
@@ -1966,10 +1650,13 @@ COMPLETE CANDIDATE MANIFEST FOR REDUNDANCY REFERENCE:
 NONFICTION-FORM GUIDANCE:
 {mode_guidance(overview.nonfiction_form)}
 
-SCORING PRINCIPLE:
-For argumentative and technical books, give greatest weight to unity, propositions, and their support. For historical or
-biographical works, also give substantial weight to chronology, causal development, and interpretation. A concise claim
-is not analytically sufficient when it lacks the necessary reasoning or evidence.
+SCORING RUBRIC:
+Block value = 3*chronological_or_logical_necessity
+              + 3*institutional_causal_or_argumentative_importance
+              + 2*turning_point_or_conclusion_value
+              + 2*explanatory_density + readability
+              - 2*redundancy_penalty - 2*excessive_detail_penalty
+              - context_dependence_penalty.
 
 BLOCKS TO SCORE IN THIS CALL:
 {supplied}
@@ -1984,22 +1671,15 @@ BLOCKS TO SCORE IN THIS CALL:
             LOGGER.warning("No score returned for %s; assigning neutral score.", block.block_id)
             block.score = 10.0
             continue
-        analytical_value = (
-            4 * score.unity_value + 3 * score.term_definition_value + 4 * score.proposition_value
-            + 4 * score.argument_support_value + 3 * score.objection_or_limitation_value
-            + 3 * score.conclusion_value + 2 * score.analytical_dependency_value
-        )
-        arc_value = (
-            2 * score.chronological_or_logical_necessity
-            + 2 * score.institutional_causal_or_argumentative_importance
-            + score.turning_point_or_conclusion_value + score.explanatory_density
-        )
-        if overview.nonfiction_form in {"historical_investigative_narrative", "biography_memoir"}:
-            analytical_value, arc_value = analytical_value * 0.8, arc_value * 1.4
         block.score = (
-            analytical_value + arc_value + score.readability
-            - 2 * score.redundancy_penalty - 2 * score.excessive_detail_penalty
-            - 2 * score.context_dependence_penalty
+            3 * score.chronological_or_logical_necessity
+            + 3 * score.institutional_causal_or_argumentative_importance
+            + 2 * score.turning_point_or_conclusion_value
+            + 2 * score.explanatory_density
+            + score.readability
+            - 2 * score.redundancy_penalty
+            - 2 * score.excessive_detail_penalty
+            - score.context_dependence_penalty
         )
         block.redundant_with = score.redundant_with
 
@@ -2011,26 +1691,15 @@ def chapter_priority_map(overview: StructuralOverview) -> dict[str, str]:
     return {item.chapter_id: item.priority.lower() for item in overview.chapter_priorities}
 
 
-def analytical_coverage(selected: list[SelectedBlock], analytical_map: AnalyticalMap) -> dict[str, list[str]]:
-    coverage: dict[str, list[str]] = {req.requirement_id: [] for req in analytical_map.requirements}
-    for block in selected:
-        tags = set(block.covers_requirement_ids + block.establishes_term_ids)
-        for requirement_id in tags:
-            if requirement_id in coverage:
-                coverage[requirement_id].append(block.block_id)
-    return coverage
-
-
 def choose_blocks_under_budget(
     book: Book,
     candidates: list[SelectedBlock],
     overview: StructuralOverview,
-    analytical_map: AnalyticalMap,
     target_ratio: float,
     coverage_mode: str = "all",
     chapter_max_share: float = 0.08,
 ) -> tuple[list[SelectedBlock], int]:
-    """Select readable blocks while protecting analytical completeness before chapter balance."""
+    """Select readable blocks while protecting book-wide coverage and preventing episode dominance."""
     target_words = int(book.total_words * target_ratio)
     priority = chapter_priority_map(overview)
     chosen: list[SelectedBlock] = []
@@ -2048,13 +1717,16 @@ def choose_blocks_under_budget(
         return {"high": 1.18, "medium": 1.0, "low": 0.86}.get(priority.get(block.chapter_id, "medium"), 1.0)
 
     def utility(block: SelectedBlock) -> float:
-        continuity_bonus = 1.07 if block.block_function in {"setup", "turning_point", "consequence", "interpretation", "conclusion"} else 1.0
-        analytical_bonus = 1.0 + 0.04 * len(set(block.covers_requirement_ids + block.establishes_term_ids + block.supports_proposition_ids))
-        return priority_multiplier(block) * continuity_bonus * analytical_bonus * block.score / math.sqrt(max(block.word_count, 1))
+        continuity_bonus = 1.07 if block.block_function in {
+            "setup", "turning_point", "consequence", "interpretation", "conclusion"
+        } else 1.0
+        return priority_multiplier(block) * continuity_bonus * block.score / math.sqrt(max(block.word_count, 1))
 
-    def cap_for(block: SelectedBlock, protected: bool = False) -> int:
-        if protected:
-            return max(chapter_cap, chosen_words_by_chapter.get(block.chapter_id, 0) + block.word_count)
+    def cap_for(block: SelectedBlock, anchor: bool = False) -> int:
+        # The concluding interpretation and very short chapters may exceed the generic cap only
+        # when one anchor block is needed to preserve coverage.
+        if anchor and block.word_count > chapter_cap:
+            return block.word_count
         if priority.get(block.chapter_id) == "high":
             return int(chapter_cap * 1.15)
         return chapter_cap
@@ -2062,56 +1734,27 @@ def choose_blocks_under_budget(
     def conflicts(block: SelectedBlock) -> bool:
         return any(r in chosen_ids for r in block.redundant_with)
 
-    def can_add(block: SelectedBlock, *, protected: bool = False, allow_overshoot: bool = False) -> bool:
-        if block.block_id in chosen_ids or (not protected and conflicts(block)):
+    def can_add(block: SelectedBlock, *, anchor: bool = False, allow_overshoot: bool = False) -> bool:
+        if block.block_id in chosen_ids or conflicts(block):
             return False
-        budget_factor = 1.12 if protected else (1.03 if allow_overshoot else 1.0)
-        if used_words + block.word_count > int(target_words * budget_factor):
+        budget_limit = int(target_words * (1.03 if allow_overshoot else 1.0))
+        if used_words + block.word_count > budget_limit:
             return False
         current = chosen_words_by_chapter.get(block.chapter_id, 0)
-        return current + block.word_count <= cap_for(block, protected=protected)
+        return current + block.word_count <= cap_for(block, anchor=anchor)
 
-    def add(block: SelectedBlock, protected: bool = False, requirement_id: str | None = None) -> None:
+    def add(block: SelectedBlock, protected: bool = False) -> None:
         nonlocal used_words
-        block.protected_anchor = protected or block.protected_anchor
-        if requirement_id and requirement_id not in block.protected_requirement_ids:
-            block.protected_requirement_ids.append(requirement_id)
+        block.protected_anchor = protected
         chosen.append(block)
         chosen_ids.add(block.block_id)
         used_words += block.word_count
         chosen_words_by_chapter[block.chapter_id] = chosen_words_by_chapter.get(block.chapter_id, 0) + block.word_count
 
-    req_by_id = {req.requirement_id: req for req in analytical_map.requirements}
-    required_ids: list[str] = []
-    for requirement_id in analytical_map.minimum_complete_reading_path:
-        req = req_by_id.get(requirement_id)
-        if req and req.must_be_preserved and requirement_id not in required_ids:
-            required_ids.append(requirement_id)
-    for req in analytical_map.requirements:
-        if req.must_be_preserved and req.requirement_id not in required_ids:
-            required_ids.append(req.requirement_id)
-
-    # First pass: protect the intellectual architecture, not merely physical chapter coverage.
-    for requirement_id in required_ids:
-        req = req_by_id[requirement_id]
-        available = [b for b in candidates if requirement_id in b.covers_requirement_ids or requirement_id in b.establishes_term_ids]
-        # Candidate blocks must explicitly claim the requirement they satisfy; support metadata is
-        # retained as an additional audit relation and is not substituted for requirement coverage.
-        for candidate in sorted(available, key=lambda b: (utility(b), -b.word_count), reverse=True):
-            if candidate.block_id in chosen_ids:
-                if requirement_id not in candidate.protected_requirement_ids:
-                    candidate.protected_requirement_ids.append(requirement_id)
-                break
-            if can_add(candidate, protected=True):
-                add(candidate, protected=True, requirement_id=requirement_id)
-                break
-        else:
-            LOGGER.warning("No feasible selected passage protected analytical requirement %s: %s", requirement_id, req.description)
-
-    # Second pass: retain chapter continuity only after essential analytical coverage is protected.
+    # First pass: ensure the reading edition contains the full arc rather than only dramatic chapters.
     for chapter in included_chapters:
         available = by_chapter.get(chapter.chapter_id, [])
-        if not available or any(b.chapter_id == chapter.chapter_id for b in chosen):
+        if not available:
             continue
         must_cover = coverage_mode == "all" or (
             coverage_mode == "major" and (
@@ -2120,17 +1763,23 @@ def choose_blocks_under_budget(
         )
         if not must_cover:
             continue
-        for anchor in sorted(available, key=lambda b: (utility(b), -b.word_count), reverse=True):
-            if can_add(anchor, protected=True, allow_overshoot=True):
+        candidates_for_anchor = sorted(
+            available,
+            key=lambda b: (utility(b), -b.word_count),
+            reverse=True,
+        )
+        for anchor in candidates_for_anchor:
+            if can_add(anchor, anchor=True, allow_overshoot=True):
                 add(anchor, protected=True)
                 break
 
-    # Third pass: allocate residual budget to the highest-value, non-redundant passages.
+    # Second pass: select additional high-value blocks, subject to per-chapter concentration limits.
     ranked = sorted(candidates, key=utility, reverse=True)
     for block in ranked:
         if can_add(block):
             add(block)
 
+    # Third pass: fill only a substantial residual budget while respecting chapter caps.
     if used_words < int(target_words * 0.94):
         additions = [b for b in ranked if b.block_id not in chosen_ids and not conflicts(b)]
         additions.sort(key=lambda b: (abs((used_words + b.word_count) - target_words), -utility(b)))
@@ -2149,7 +1798,6 @@ def choose_blocks_under_budget(
 def quality_control(
     llm: LLM,
     overview: StructuralOverview,
-    analytical_map: AnalyticalMap,
     selected: list[SelectedBlock],
     candidates: list[SelectedBlock],
     target_words: int,
@@ -2157,33 +1805,30 @@ def quality_control(
 ) -> QualityControlResponse:
     selected_ids = {b.block_id for b in selected}
     retained_words = sum(b.word_count for b in selected)
-    coverage = analytical_coverage(selected, analytical_map)
     retained_manifest = "\n\n".join(
         f"RETAINED {b.block_id} | {b.chapter_id}: {b.chapter_title} | words={b.word_count} | score={b.score:.1f}\n"
-        f"Covers: {', '.join(b.covers_requirement_ids)} | Defines: {', '.join(b.establishes_term_ids)} | Supports: {', '.join(b.supports_proposition_ids)}\n"
-        f"Protected for: {', '.join(b.protected_requirement_ids)}\nReason: {b.selection_reason}\nPreview: {block_preview(b, 120)}"
+        f"Reason: {b.selection_reason}\nPreview: {block_preview(b, 120)}"
         for b in selected
     )
-    alternatives = sorted([b for b in candidates if b.block_id not in selected_ids], key=lambda x: x.score, reverse=True)[:30]
+    alternatives = sorted(
+        [b for b in candidates if b.block_id not in selected_ids],
+        key=lambda x: x.score,
+        reverse=True,
+    )[:20]
     alternative_manifest = "\n".join(
-        f"AVAILABLE {b.block_id} | {b.chapter_id}: {b.chapter_title} | words={b.word_count} | score={b.score:.1f} | covers={','.join(b.covers_requirement_ids)} | supports={','.join(b.supports_proposition_ids)} | {b.selection_reason}"
+        f"AVAILABLE {b.block_id} | {b.chapter_id}: {b.chapter_title} | words={b.word_count} | score={b.score:.1f} | {b.selection_reason}"
         for b in alternatives
     )
+
     input_text = f"""STRUCTURAL OVERVIEW:
 {overview.model_dump_json(indent=2)}
-
-ANALYTICAL MAP:
-{analytical_map.model_dump_json(indent=2)}
-
-PROGRAMMATIC REQUIREMENT COVERAGE BY RETAINED BLOCK:
-{json.dumps(coverage, indent=2, ensure_ascii=False)}
 
 WORD BUDGET:
 Target: {target_words}
 Currently retained: {retained_words}
 
 PROPOSED RETAINED BLOCKS:
-{truncate_words(retained_manifest, 15000)}
+{truncate_words(retained_manifest, 12000)}
 
 HIGH-SCORING UNSELECTED ALTERNATIVES:
 {alternative_manifest}
@@ -2208,8 +1853,9 @@ def apply_qc_changes(
     remove_ids: set[str] = set()
     for block_id in review.remove_block_ids:
         block = candidate_map.get(block_id)
-        if block is None or block.protected_requirement_ids:
+        if block is None:
             continue
+        # Never remove the only retained block for a represented chapter in the reader edition.
         if len(selected_by_chapter.get(block.chapter_id, [])) <= 1:
             continue
         remove_ids.add(block_id)
@@ -2227,229 +1873,11 @@ def apply_qc_changes(
             continue
         new_words = sum(b.word_count for b in revised) + block.word_count
         new_chapter_words = words_by_chapter.get(block.chapter_id, 0) + block.word_count
-        if new_words <= int(target_words * 1.12) and (new_chapter_words <= chapter_cap or block.protected_requirement_ids):
+        if new_words <= int(target_words * 1.03) and new_chapter_words <= chapter_cap:
             revised.append(block)
             current_ids.add(block_id)
             words_by_chapter[block.chapter_id] = new_chapter_words
     return revised
-
-
-# ---------------------------------------------------------------------------
-# Editorial transition generation and validation
-# ---------------------------------------------------------------------------
-
-def selected_in_reading_order(book: Book, selected: list[SelectedBlock]) -> list[SelectedBlock]:
-    chapter_order = {chapter.chapter_id: index for index, chapter in enumerate(book.chapters)}
-    return sorted(
-        selected,
-        key=lambda block: (chapter_order.get(block.chapter_id, 10**6), book.paragraphs[block.paragraph_ids[0]].index),
-    )
-
-
-def has_omission_gap(book: Book, first: SelectedBlock, second: SelectedBlock) -> bool:
-    if first.chapter_id != second.chapter_id:
-        return True
-    last_index = book.paragraphs[first.paragraph_ids[-1]].index
-    next_index = book.paragraphs[second.paragraph_ids[0]].index
-    return next_index > last_index + 1
-
-
-def potential_transition_pairs(book: Book, selected: list[SelectedBlock]) -> list[tuple[SelectedBlock, SelectedBlock]]:
-    ordered = selected_in_reading_order(book, selected)
-    return [
-        (first, second) for first, second in zip(ordered, ordered[1:])
-        if has_omission_gap(book, first, second)
-    ]
-
-
-def _transition_pair_text(
-    first: SelectedBlock,
-    second: SelectedBlock,
-    max_passage_words: int = 450,
-) -> str:
-    return f"""GAP FROM {first.block_id} TO {second.block_id}
-Preceding chapter: {first.chapter_title}
-Preceding analytical coverage: {', '.join(first.covers_requirement_ids + first.establishes_term_ids)}
-Preceding retained passage excerpt:
-{truncate_words(first.text, max_passage_words)}
-
-Following chapter: {second.chapter_title}
-Following analytical coverage: {', '.join(second.covers_requirement_ids + second.establishes_term_ids)}
-Following passage requires: {', '.join(second.requires_prior_requirement_ids)}
-Following retained passage excerpt:
-{truncate_words(second.text, max_passage_words)}"""
-
-
-def generate_editorial_transitions(
-    llm: LLM,
-    book: Book,
-    analytical_map: AnalyticalMap,
-    selected: list[SelectedBlock],
-    transition_mode: str,
-    max_transition_words: int,
-    batch_size: int,
-    output_dir: Path,
-) -> list[EditorialTransition]:
-    """Generate disclosed bridges only across actual gaps in the final retained sequence."""
-    if transition_mode == "none":
-        safe_json_dump([], output_dir / "editorial_transitions.json")
-        return []
-
-    pairs = potential_transition_pairs(book, selected)
-    if not pairs:
-        safe_json_dump([], output_dir / "editorial_transitions.json")
-        return []
-
-    requirement_ids = {req.requirement_id for req in analytical_map.requirements}
-    selected_ids = {block.block_id for block in selected}
-    pair_keys = {(first.block_id, second.block_id) for first, second in pairs}
-    transitions: list[EditorialTransition] = []
-    LOGGER.info("Generating %s editorial transitions for %d candidate gap(s).", transition_mode, len(pairs))
-
-    for start in range(0, len(pairs), batch_size):
-        batch = pairs[start:start + batch_size]
-        supplied_pairs = "\n\n---\n\n".join(_transition_pair_text(first, second) for first, second in batch)
-        input_text = f"""TRANSITION MODE: {transition_mode}
-MAXIMUM WORDS PER TRANSITION: {max_transition_words}
-
-BOOK CENTRAL PROBLEM:
-{analytical_map.central_problem}
-
-BOOK UNITY:
-{analytical_map.unity_statement}
-
-ANALYTICAL REQUIREMENTS:
-{json.dumps([req.model_dump() for req in analytical_map.requirements], indent=2, ensure_ascii=False)}
-
-CANDIDATE GAPS BETWEEN FINAL RETAINED BLOCKS:
-{supplied_pairs}
-"""
-        response = llm.structured(TRANSITION_SYSTEM, input_text, EditorialTransitionResponse)
-        for transition in response.transitions:
-            key = (transition.before_block_id, transition.after_block_id)
-            if key not in pair_keys:
-                LOGGER.warning("Ignoring transition for an unknown or non-adjacent block pair: %s -> %s", *key)
-                continue
-            if not transition.necessary or not transition.text.strip():
-                continue
-            text = re.sub(r"^\s*(editorial transition|transition)\s*:\s*", "", transition.text.strip(), flags=re.IGNORECASE)
-            if word_count(text) > max_transition_words:
-                LOGGER.warning("Deferring overlong transition to validation: %s -> %s", *key)
-            grounding_blocks = [bid for bid in transition.grounding_block_ids if bid in {key[0], key[1]}]
-            grounding_reqs = [rid for rid in transition.grounding_requirement_ids if rid in requirement_ids]
-            transitions.append(transition.model_copy(update={
-                "text": text,
-                "grounding_block_ids": grounding_blocks,
-                "grounding_requirement_ids": grounding_reqs,
-            }))
-
-    deduplicated: dict[tuple[str, str], EditorialTransition] = {}
-    for transition in transitions:
-        deduplicated[(transition.before_block_id, transition.after_block_id)] = transition
-    result = list(deduplicated.values())
-    safe_json_dump(result, output_dir / "editorial_transitions.json")
-    return result
-
-
-def validate_editorial_transitions(
-    llm: LLM,
-    book: Book,
-    analytical_map: AnalyticalMap,
-    selected: list[SelectedBlock],
-    transitions: list[EditorialTransition],
-    max_transition_words: int,
-    batch_size: int,
-    output_dir: Path,
-) -> list[EditorialTransition]:
-    """Validate generated bridges before they become reader-visible editorial apparatus."""
-    if not transitions:
-        safe_json_dump([], output_dir / "editorial_transition_validation.json")
-        return []
-
-    ordered = selected_in_reading_order(book, selected)
-    block_map = {block.block_id: block for block in ordered}
-    transition_map = {(item.before_block_id, item.after_block_id): item for item in transitions}
-    validated: list[EditorialTransition] = []
-    audits: list[TransitionValidation] = []
-    items = list(transition_map.items())
-    LOGGER.info("Validating %d proposed editorial transition(s).", len(items))
-    for start in range(0, len(items), batch_size):
-        batch = items[start:start + batch_size]
-        supplied: list[str] = []
-        for (before_id, after_id), transition in batch:
-            first = block_map[before_id]
-            second = block_map[after_id]
-            supplied.append(
-                _transition_pair_text(first, second)
-                + f"\nPROPOSED EDITORIAL TRANSITION: {transition.text}\n"
-                + f"DECLARED GROUNDING REQUIREMENTS: {', '.join(transition.grounding_requirement_ids)}"
-            )
-        transition_separator = "\n\n---\n\n"
-        input_text = f"""MAXIMUM APPROVED WORDS PER TRANSITION: {max_transition_words}
-
-BOOK UNITY:
-{analytical_map.unity_statement}
-
-ANALYTICAL MAP:
-{analytical_map.model_dump_json(indent=2)}
-
-TRANSITIONS TO VALIDATE:
-{transition_separator.join(supplied)}
-"""
-        response = llm.structured(TRANSITION_VALIDATION_SYSTEM, input_text, TransitionValidationResponse)
-        audits.extend(response.validations)
-
-    audits_by_pair = {(item.before_block_id, item.after_block_id): item for item in audits}
-    for key, transition in transition_map.items():
-        check = audits_by_pair.get(key)
-        if check is None or not check.grounded or check.introduces_new_claim or check.impersonates_author or check.overly_explanatory:
-            LOGGER.info("Omitting unapproved editorial transition %s -> %s.", *key)
-            continue
-        approved_text = re.sub(
-            r"^\s*(editorial transition|transition)\s*:\s*", "", check.approved_text.strip(), flags=re.IGNORECASE
-        )
-        if not approved_text or word_count(approved_text) > max_transition_words:
-            LOGGER.info("Omitting empty or overlong approved editorial transition %s -> %s.", *key)
-            continue
-        validated.append(transition.model_copy(update={"text": approved_text}))
-    safe_json_dump(audits, output_dir / "editorial_transition_validation.json")
-    safe_json_dump(validated, output_dir / "editorial_transitions.json")
-    return validated
-
-
-def transition_word_count(transitions: list[EditorialTransition]) -> int:
-    return sum(word_count(transition.text) for transition in transitions if transition.necessary)
-
-
-def enforce_transition_budget(
-    book: Book,
-    selected: list[SelectedBlock],
-    transitions: list[EditorialTransition],
-    max_transition_share: float,
-    output_dir: Path,
-) -> list[EditorialTransition]:
-    """Limit generated editorial text without altering approved wording."""
-    if not transitions:
-        return []
-    source_words = sum(block.word_count for block in selected)
-    budget_words = int(source_words * max_transition_share)
-    ordered_blocks = selected_in_reading_order(book, selected)
-    position = {block.block_id: index for index, block in enumerate(ordered_blocks)}
-    ordered_transitions = sorted(transitions, key=lambda item: position.get(item.after_block_id, 10**9))
-    kept: list[EditorialTransition] = []
-    used_words = 0
-    for transition in ordered_transitions:
-        proposed_words = word_count(transition.text)
-        if used_words + proposed_words <= budget_words:
-            kept.append(transition)
-            used_words += proposed_words
-        else:
-            LOGGER.info(
-                "Omitting approved editorial transition %s -> %s to respect the editorial-word cap (%d words).",
-                transition.before_block_id, transition.after_block_id, budget_words,
-            )
-    safe_json_dump(kept, output_dir / "editorial_transitions.json")
-    return kept
 
 
 # ---------------------------------------------------------------------------
@@ -2465,32 +1893,18 @@ def paragraph_range(block: SelectedBlock, book: Book) -> str:
     return f"{block.chapter_id}, {block.paragraph_ids[0]}-{block.paragraph_ids[-1]}{page_marker}"
 
 
-def assemble_reading_markdown(
-    book: Book,
-    selected: list[SelectedBlock],
-    transitions: list[EditorialTransition],
-    output_dir: Path,
-) -> Path:
-    """Create the reading edition from verbatim passages with disclosed editorial bridges."""
-    ordered = selected_in_reading_order(book, selected)
+def assemble_reading_markdown(book: Book, selected: list[SelectedBlock], output_dir: Path) -> Path:
+    """Create the actual condensed reading text: almost entirely the author's prose."""
     by_chapter: dict[str, list[SelectedBlock]] = {}
-    for block in ordered:
+    for block in selected:
         by_chapter.setdefault(block.chapter_id, []).append(block)
-    transition_before_block = {
-        transition.after_block_id: transition.text.strip()
-        for transition in transitions
-        if transition.necessary and transition.text.strip()
-    }
-    first_block_id = ordered[0].block_id if ordered else None
 
     lines: list[str] = [
         f"# {book.title}",
         "",
         "## Condensed reading edition",
         "",
-        "*This edition consists of selected verbatim passages from the original work. Omissions are marked by "
-        "centered dots. Brief italicized editorial transitions may be inserted to preserve continuity between "
-        "retained passages; these transitions are not part of the original text.*",
+        "*Selected verbatim passages from the original work. Omissions are indicated by three centered dots.*",
         "",
     ]
     for chapter in book.chapters:
@@ -2499,59 +1913,38 @@ def assemble_reading_markdown(
             continue
         lines.extend([f"## {chapter.title}", ""])
         for index, block in enumerate(blocks):
-            if block.block_id != first_block_id:
+            if index:
                 lines.extend(["", "* * *", ""])
-                transition_text = transition_before_block.get(block.block_id)
-                if transition_text:
-                    lines.extend([f"*Editorial transition: {transition_text}*", ""])
             lines.append(block.text.strip())
             lines.append("")
     path = output_dir / "reading_abridgement.md"
     path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
     return path
 
+
 def assemble_audit_markdown(
     book: Book,
     overview: StructuralOverview,
-    analytical_map: AnalyticalMap,
     selected: list[SelectedBlock],
     target_words: int,
     review: QualityControlResponse,
-    transitions: list[EditorialTransition],
     output_dir: Path,
 ) -> Path:
     selected_words = sum(b.word_count for b in selected)
-    editorial_words = transition_word_count(transitions)
-    coverage = analytical_coverage(selected, analytical_map)
     lines = [
         f"# Selection audit: {book.title}", "",
         f"- Source words analysed: {book.total_words:,}",
         f"- Target words: {target_words:,}",
         f"- Selected verbatim words: {selected_words:,}",
-        f"- Retained-source proportion: {selected_words / max(book.total_words, 1):.1%}",
-        f"- Editorial transition words: {editorial_words:,}",
-        f"- Total reading-edition words: {selected_words + editorial_words:,}", "",
+        f"- Retained proportion: {selected_words / max(book.total_words, 1):.1%}", "",
         "## Editorial overview", "", overview.overview, "",
         f"**Central question:** {overview.central_question}", "",
         f"**Governing thesis:** {overview.governing_thesis}", "",
         f"**Nonfiction form:** {overview.nonfiction_form}", "",
-        "## Analytical coverage", "",
-        "| Requirement | Kind | Importance | Required | Retained block(s) | Status |",
-        "|---|---|---|---|---|---|",
-    ]
-    for req in analytical_map.requirements:
-        blocks = coverage.get(req.requirement_id, [])
-        status = "covered" if blocks else ("MISSING" if req.must_be_preserved else "not retained")
-        desc = req.description.replace("|", "\\|")
-        lines.append(
-            f"| {req.requirement_id}: {desc} | {req.kind} | {req.importance} | "
-            f"{'yes' if req.must_be_preserved else 'no'} | {', '.join(blocks) or '—'} | {status} |"
-        )
-    lines.extend([
-        "", "## Selection balance by chapter", "",
+        "## Selection balance by chapter", "",
         "| Chapter | Source words | Retained words | Retained share of chapter | Share of abridgement | Status |",
         "|---|---:|---:|---:|---:|---|",
-    ])
+    ]
     retained_by_chapter: dict[str, int] = {}
     for block in selected:
         retained_by_chapter[block.chapter_id] = retained_by_chapter.get(block.chapter_id, 0) + block.word_count
@@ -2570,90 +1963,16 @@ def assemble_audit_markdown(
         lines.extend([
             f"### {block.block_id}: {block.chapter_title}", "",
             f"- Location: {paragraph_range(block, book)}", f"- Words: {block.word_count}",
-            f"- Score: {block.score:.1f}", f"- Function: {block.block_function}",
-            f"- Covers analytical requirements: {', '.join(block.covers_requirement_ids) or 'none tagged'}",
-            f"- Defines essential terms: {', '.join(block.establishes_term_ids) or 'none tagged'}",
-            f"- Supports propositions: {', '.join(block.supports_proposition_ids) or 'none tagged'}",
-            f"- Protected requirements: {', '.join(block.protected_requirement_ids) or 'none'}",
-            f"- Protected continuity anchor: {block.protected_anchor}", f"- Reason: {block.selection_reason}", "",
+            f"- Score: {block.score:.1f}", f"- Function: {block.block_function}", f"- Protected coverage anchor: {block.protected_anchor}", f"- Reason: {block.selection_reason}", "",
         ])
-    lines.extend(["## Analytical quality-control assessment", "", review.assessment, ""])
-    if review.analytical_coverage.missing_requirement_ids:
-        lines.append(f"- Missing required coverage: {', '.join(review.analytical_coverage.missing_requirement_ids)}")
-    if review.analytical_coverage.unsupported_proposition_ids:
-        lines.append(f"- Unsupported propositions: {', '.join(review.analytical_coverage.unsupported_proposition_ids)}")
-    if review.analytical_coverage.undefined_term_ids:
-        lines.append(f"- Undefined essential terms: {', '.join(review.analytical_coverage.undefined_term_ids)}")
-    if transitions:
-        lines.extend(["", "## Approved editorial transitions", ""])
-        for transition in transitions:
-            lines.extend([
-                f"### {transition.before_block_id} to {transition.after_block_id}", "",
-                f"- Type: {transition.transition_type}",
-                f"- Grounding blocks: {', '.join(transition.grounding_block_ids) or 'adjacent retained passages'}",
-                f"- Grounding requirements: {', '.join(transition.grounding_requirement_ids) or 'none tagged'}",
-                f"- Text: *{transition.text}*", "",
-            ])
     if review.transition_notes:
-        lines.extend(["", "## Continuity warnings from quality control", ""])
+        lines.extend(["## Continuity warnings from quality control", ""])
         for note in review.transition_notes:
             lines.append(f"- Before {note.before_block_id}: {note.note}")
     path = output_dir / "selection_audit.md"
     path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
     return path
 
-
-def assemble_analytical_reading_guide(
-    book: Book,
-    analytical_map: AnalyticalMap,
-    selected: list[SelectedBlock],
-    output_dir: Path,
-) -> Path:
-    """Write a separate analytical guide; never interleave model metadata with source prose."""
-    coverage = analytical_coverage(selected, analytical_map)
-    block_map = {block.block_id: block for block in selected}
-    lines = [
-        f"# Analytical reading guide: {book.title}", "",
-        "This guide maps the retained verbatim passages to the book's analytical structure. "
-        "It is separate from the condensed reading edition, whose substantive content is selected original prose; any generated continuity bridges in the edition are explicitly labelled editorial transitions.", "",
-        "## What the book is trying to answer", "", analytical_map.central_problem, "",
-        "## Unity of the book", "", analytical_map.unity_statement, "",
-        "## Minimum complete reading path", "",
-    ]
-    req_map = {req.requirement_id: req for req in analytical_map.requirements}
-    for index, req_id in enumerate(analytical_map.minimum_complete_reading_path, start=1):
-        req = req_map.get(req_id)
-        if req is None:
-            continue
-        blocks = coverage.get(req_id, [])
-        locations = "; ".join(
-            f"{bid} ({paragraph_range(block_map[bid], book)})" for bid in blocks if bid in block_map
-        ) or "Not retained"
-        lines.append(f"{index}. **{req.kind.replace('_', ' ').title()} — {req_id}.** {req.description}  ")
-        lines.append(f"   Retained passage: {locations}")
-    lines.extend(["", "## Essential terms", ""])
-    for req in analytical_map.requirements:
-        if req.kind == "essential_term":
-            lines.append(f"- **{req.requirement_id}.** {req.description} Retained in: {', '.join(coverage.get(req.requirement_id, [])) or 'not retained'}")
-    lines.extend(["", "## Major propositions and their support", ""])
-    relations_by_target: dict[str, list[str]] = {}
-    for relation in analytical_map.argument_relations:
-        if relation.relation == "supports":
-            relations_by_target.setdefault(relation.target_requirement_id, []).append(relation.source_requirement_id)
-    for req in analytical_map.requirements:
-        if req.kind != "major_proposition":
-            continue
-        support_ids = relations_by_target.get(req.requirement_id, [])
-        lines.extend([f"### {req.requirement_id}", "", req.description, "", f"Retained proposition passage(s): {', '.join(coverage.get(req.requirement_id, [])) or 'not retained'}", ""])
-        if support_ids:
-            for support_id in support_ids:
-                support = req_map.get(support_id)
-                description = support.description if support else support_id
-                lines.append(f"- Support {support_id}: {description} Retained in: {', '.join(coverage.get(support_id, [])) or 'not retained'}")
-            lines.append("")
-    path = output_dir / "analytical_reading_guide.md"
-    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
-    return path
 
 
 def _reader_page_size(name: str) -> tuple[float, float]:
@@ -2769,7 +2088,6 @@ def _pdf_safe_text(value: str) -> str:
 def export_reading_pdf(
     book: Book,
     selected: list[SelectedBlock],
-    transitions: list[EditorialTransition],
     output_path: Path,
     page_preset: str = "small-tablet",
     body_font_size: float = 14.0,
@@ -2799,7 +2117,6 @@ def export_reading_pdf(
     page_size = _reader_page_size(page_preset)
     fonts = _register_reader_fonts(font_preference)
     selected_words = sum(block.word_count for block in selected)
-    editorial_words = transition_word_count(transitions)
 
     class OmissionRule(Flowable):
         def __init__(self, width: float = 72.0) -> None:
@@ -2848,12 +2165,6 @@ def export_reading_pdf(
         splitLongWords=False, allowWidows=0, allowOrphans=0,
     )
     first_body_style = ParagraphStyle("ReaderFirstBody", parent=body_style, firstLineIndent=0)
-    transition_style = ParagraphStyle(
-        "ReaderTransition", parent=styles["BodyText"], fontName=fonts["italic"], fontSize=max(10.5, body_font_size - 1.3),
-        leading=max(16.0, body_font_size * 1.42), alignment=TA_LEFT, textColor=colors.HexColor("#5E554C"),
-        leftIndent=body_font_size * 0.7, rightIndent=body_font_size * 0.7, spaceBefore=5, spaceAfter=14,
-        firstLineIndent=0,
-    )
 
     left_margin = 0.67 * inch
     right_margin = 0.67 * inch
@@ -2892,16 +2203,9 @@ def export_reading_pdf(
 
     doc.addPageTemplates([PageTemplate(id="reader", frames=[frame], onPage=page_decor)])
 
-    ordered = selected_in_reading_order(book, selected)
     by_chapter: dict[str, list[SelectedBlock]] = {}
-    for block in ordered:
+    for block in selected:
         by_chapter.setdefault(block.chapter_id, []).append(block)
-    transition_before_block = {
-        transition.after_block_id: transition.text.strip()
-        for transition in transitions
-        if transition.necessary and transition.text.strip()
-    }
-    first_block_id = ordered[0].block_id if ordered else None
 
     story: list[Any] = [
         Spacer(1, 1.44 * inch),
@@ -2910,9 +2214,8 @@ def export_reading_pdf(
         Paragraph("Condensed Reading Edition", subtitle_style),
         Spacer(1, 0.40 * inch),
         Paragraph(
-            f"Selected verbatim passages from the original work. Omissions are marked discreetly; "
-            f"italicized editorial transitions, where present, are not original text. "
-            f"Retained source text: {selected_words:,} words; editorial transitions: {editorial_words:,} words.",
+            f"Selected verbatim passages from the original work. "
+            f"Omissions are marked discreetly. Retained text: {selected_words:,} words.",
             note_style,
         ),
         PageBreak(),
@@ -2929,13 +2232,8 @@ def export_reading_pdf(
         story.extend([Spacer(1, 0.20 * inch), Paragraph(_pdf_safe_text(chapter.title), chapter_style)])
         first_para = True
         for block_index, block in enumerate(blocks):
-            if block.block_id != first_block_id:
+            if block_index:
                 story.extend([Spacer(1, 4), OmissionRule(), Spacer(1, 8)])
-                transition_text = transition_before_block.get(block.block_id)
-                if transition_text:
-                    story.append(Paragraph(
-                        _pdf_safe_text(f"Editorial transition: {transition_text}"), transition_style
-                    ))
                 first_para = True
             paragraphs = [p.strip() for p in re.split(r"\n\s*\n+", block.text.strip()) if p.strip()]
             for paragraph in paragraphs:
@@ -3051,19 +2349,17 @@ def reset_generated_outputs(output_dir: Path) -> None:
     """Remove prior generated artefacts while leaving unrelated user files untouched."""
     generated_files = [
         "book_metadata.json", "book_paragraphs.jsonl", "parsed_structure_report.md",
-        "structural_overview.json", "chapter_analyses.json", "analytical_map.json", "scored_candidates.json", "global_selection.json",
-        "quality_control.json", "editorial_transitions.json", "editorial_transition_validation.json",
-        "selection_audit.md", "analytical_reading_guide.md", "reading_abridgement.md",
+        "structural_overview.json", "scored_candidates.json", "global_selection.json",
+        "quality_control.json", "selection_audit.md", "reading_abridgement.md",
         "reading_abridgement.docx", "reading_abridgement.pdf",
     ]
     for filename in generated_files:
         target = output_dir / filename
         if target.exists():
             target.unlink()
-    for generated_dir in ("chapter_candidates", "chapter_analysis"):
-        target_dir = output_dir / generated_dir
-        if target_dir.exists():
-            shutil.rmtree(target_dir)
+    candidates_dir = output_dir / "chapter_candidates"
+    if candidates_dir.exists():
+        shutil.rmtree(candidates_dir)
 
 
 def run_pipeline(args: argparse.Namespace) -> Path:
@@ -3097,26 +2393,11 @@ def run_pipeline(args: argparse.Namespace) -> Path:
         max_structural_words=args.max_structural_words,
         output_dir=output_dir,
     )
-    chapter_analyses = create_chapter_analyses(
-        llm=llm,
-        book=book,
-        overview=overview,
-        chapter_chunk_words=args.chapter_chunk_words,
-        output_dir=output_dir,
-    )
-    analytical_map = create_analytical_map(
-        llm=llm,
-        book=book,
-        overview=overview,
-        chapter_analyses=chapter_analyses,
-        output_dir=output_dir,
-    )
 
     candidates = all_candidate_blocks(
         llm=llm,
         book=book,
         overview=overview,
-        analytical_map=analytical_map,
         emphasis=args.emphasis,
         candidate_ratio=args.candidate_ratio,
         chapter_chunk_words=args.chapter_chunk_words,
@@ -3129,7 +2410,6 @@ def run_pipeline(args: argparse.Namespace) -> Path:
         llm=llm,
         candidates=candidates,
         overview=overview,
-        analytical_map=analytical_map,
         score_batch_size=args.score_batch_size,
         output_dir=output_dir,
     )
@@ -3138,7 +2418,6 @@ def run_pipeline(args: argparse.Namespace) -> Path:
         book=book,
         candidates=scored,
         overview=overview,
-        analytical_map=analytical_map,
         target_ratio=args.target_ratio,
         coverage_mode=args.coverage_mode,
         chapter_max_share=args.chapter_max_share,
@@ -3152,7 +2431,6 @@ def run_pipeline(args: argparse.Namespace) -> Path:
     review = quality_control(
         llm=llm,
         overview=overview,
-        analytical_map=analytical_map,
         selected=selected,
         candidates=scored,
         target_words=target_words,
@@ -3161,66 +2439,25 @@ def run_pipeline(args: argparse.Namespace) -> Path:
     if args.apply_qc:
         selected = apply_qc_changes(selected, scored, review, target_words, chapter_max_share=args.chapter_max_share)
 
-    transitions = generate_editorial_transitions(
-        llm=llm,
-        book=book,
-        analytical_map=analytical_map,
-        selected=selected,
-        transition_mode=args.transitions,
-        max_transition_words=args.max_transition_words,
-        batch_size=args.transition_batch_size,
-        output_dir=output_dir,
-    )
-    transitions = validate_editorial_transitions(
-        llm=llm,
-        book=book,
-        analytical_map=analytical_map,
-        selected=selected,
-        transitions=transitions,
-        max_transition_words=args.max_transition_words,
-        batch_size=args.transition_batch_size,
-        output_dir=output_dir,
-    )
-    transitions = enforce_transition_budget(
-        book=book,
-        selected=selected,
-        transitions=transitions,
-        max_transition_share=args.max_transition_share,
-        output_dir=output_dir,
-    )
-
     global_payload = {
         "target_ratio": args.target_ratio,
         "target_words": target_words,
         "selected_words": sum(b.word_count for b in selected),
         "selected_ratio": sum(b.word_count for b in selected) / max(book.total_words, 1),
-        "editorial_transition_mode": args.transitions,
-        "max_editorial_transition_share": args.max_transition_share,
-        "editorial_transition_words": transition_word_count(transitions),
-        "total_reading_edition_words": sum(b.word_count for b in selected) + transition_word_count(transitions),
-        "editorial_transitions": [transition.model_dump() for transition in transitions],
         "selected_blocks": [asdict(b) for b in selected],
         "quality_control_applied": bool(args.apply_qc),
         "nonfiction_form": overview.nonfiction_form,
-        "analytical_requirements": [x.model_dump() for x in analytical_map.requirements],
-        "analytical_coverage": analytical_coverage(selected, analytical_map),
-        "missing_mandatory_requirement_ids": [
-            req.requirement_id for req in analytical_map.requirements
-            if req.must_be_preserved and not analytical_coverage(selected, analytical_map).get(req.requirement_id)
-        ],
         "coverage_mode": args.coverage_mode,
         "chapter_max_share": args.chapter_max_share,
     }
     safe_json_dump(global_payload, output_dir / "global_selection.json")
 
-    reading_path = assemble_reading_markdown(book=book, selected=selected, transitions=transitions, output_dir=output_dir)
-    assemble_audit_markdown(book=book, overview=overview, analytical_map=analytical_map, selected=selected, target_words=target_words, review=review, transitions=transitions, output_dir=output_dir)
-    assemble_analytical_reading_guide(book=book, analytical_map=analytical_map, selected=selected, output_dir=output_dir)
+    reading_path = assemble_reading_markdown(book=book, selected=selected, output_dir=output_dir)
+    assemble_audit_markdown(book=book, overview=overview, selected=selected, target_words=target_words, review=review, output_dir=output_dir)
     pdf_path = output_dir / "reading_abridgement.pdf"
     export_reading_pdf(
         book=book,
         selected=selected,
-        transitions=transitions,
         output_path=pdf_path,
         page_preset=args.pdf_page_size,
         body_font_size=args.pdf_font_size,
@@ -3260,7 +2497,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--coverage-mode",
         choices=["all", "major", "none"],
         default="all",
-        help="Continuity coverage after mandatory analytical coverage. 'all' attempts to retain at least one passage per parsed non-back-matter section; default: all.",
+        help="Chapter coverage rule. 'all' retains at least one passage per parsed non-back-matter section; default: all.",
     )
     parser.add_argument(
         "--chapter-max-share",
@@ -3299,30 +2536,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Apply final quality-control add/remove recommendations when they remain within the word budget tolerance.",
     )
     parser.add_argument(
-        "--transitions",
-        choices=["none", "minimal", "guided"],
-        default="minimal",
-        help="Reader-visible editorial transition policy. Default: minimal; transitions are visibly labelled and are not source text.",
-    )
-    parser.add_argument(
-        "--max-transition-words",
-        type=int,
-        default=45,
-        help="Maximum words permitted in an approved editorial transition. Default: 45.",
-    )
-    parser.add_argument(
-        "--transition-batch-size",
-        type=int,
-        default=12,
-        help="Candidate discontinuities per transition generation or validation call. Default: 12.",
-    )
-    parser.add_argument(
-        "--max-transition-share",
-        type=float,
-        default=0.02,
-        help="Maximum editorial-transition words as a proportion of retained verbatim words. Default: 0.02.",
-    )
-    parser.add_argument(
         "--pdf-page-size",
         choices=["small-tablet", "a5", "large-tablet"],
         default="small-tablet",
@@ -3356,12 +2569,6 @@ def validate_args(args: argparse.Namespace) -> None:
         raise ValueError("--chapter-chunk-words must be at least 1000.")
     if args.score_batch_size < 1:
         raise ValueError("--score-batch-size must be positive.")
-    if not 10 <= args.max_transition_words <= 100:
-        raise ValueError("--max-transition-words must be between 10 and 100.")
-    if args.transition_batch_size < 1:
-        raise ValueError("--transition-batch-size must be positive.")
-    if not 0.0 <= args.max_transition_share <= 0.10:
-        raise ValueError("--max-transition-share must be between 0 and 0.10.")
     if not 11.0 <= args.pdf_font_size <= 20.0:
         raise ValueError("--pdf-font-size must be between 11 and 20 points.")
 
