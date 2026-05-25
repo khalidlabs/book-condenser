@@ -1,12 +1,8 @@
 # Changelog
 
-## 0.1.4
+## Unreleased
 
-### Changed
-- Final selection allocates retained words per chapter in proportion to ...
-
-### Removed
-- `--chapter-max-share` CLI flag. ...
+## 0.2.0
 
 ### Changed
 

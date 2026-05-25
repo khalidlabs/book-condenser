@@ -2283,7 +2283,7 @@ def has_omission_gap(book: Book, first: SelectedBlock, second: SelectedBlock) ->
 def potential_transition_pairs(book: Book, selected: list[SelectedBlock]) -> list[tuple[SelectedBlock, SelectedBlock]]:
     ordered = selected_in_reading_order(book, selected)
     return [
-        (first, second) for first, second in zip(ordered, ordered[1:])
+        (first, second) for first, second in zip(ordered, ordered[1:], strict=False)
         if has_omission_gap(book, first, second)
     ]
 
@@ -2327,7 +2327,6 @@ def generate_editorial_transitions(
         return []
 
     requirement_ids = {req.requirement_id for req in analytical_map.requirements}
-    selected_ids = {block.block_id for block in selected}
     pair_keys = {(first.block_id, second.block_id) for first, second in pairs}
     transitions: list[EditorialTransition] = []
     LOGGER.info("Generating %s editorial transitions for %d candidate gap(s).", transition_mode, len(pairs))
@@ -2524,7 +2523,7 @@ def assemble_reading_markdown(
         if not blocks:
             continue
         lines.extend([f"## {chapter.title}", ""])
-        for index, block in enumerate(blocks):
+        for block in blocks:
             if block.block_id != first_block_id:
                 lines.extend(["", "* * *", ""])
                 transition_text = transition_before_block.get(block.block_id)
@@ -2954,7 +2953,7 @@ def export_reading_pdf(
         first_section = False
         story.extend([Spacer(1, 0.20 * inch), Paragraph(_pdf_safe_text(chapter.title), chapter_style)])
         first_para = True
-        for block_index, block in enumerate(blocks):
+        for block in blocks:
             if block.block_id != first_block_id:
                 story.extend([Spacer(1, 4), OmissionRule(), Spacer(1, 8)])
                 transition_text = transition_before_block.get(block.block_id)
