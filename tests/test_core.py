@@ -9,7 +9,6 @@ from book_condenser.core import (
     AnalyticalCoverageAssessment,
     AnalyticalMap,
     AnalyticalRequirement,
-    ArgumentRelation,
     Book,
     Chapter,
     Paragraph,
