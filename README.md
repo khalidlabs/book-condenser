@@ -96,12 +96,6 @@ Set the API key for full runs:
 export OPENAI_API_KEY="your-api-key-here"
 ```
 
-Windows PowerShell:
-
-```powershell
-$env:OPENAI_API_KEY="your-api-key-here"
-```
-
 The default model is `gpt-5-mini`. It may be changed with either an environment variable or a command-line option:
 
 ```bash
