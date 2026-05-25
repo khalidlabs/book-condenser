@@ -2011,6 +2011,29 @@ def chapter_priority_map(overview: StructuralOverview) -> dict[str, str]:
     return {item.chapter_id: item.priority.lower() for item in overview.chapter_priorities}
 
 
+def chapter_word_caps(
+    book: Book,
+    target_words: int,
+    priority: dict[str, str],
+    *,
+    min_cap: int = 600,
+    high_priority_multiplier: float = 1.15,
+) -> dict[str, int]:
+    """Per-chapter retained-word ceilings proportional to included source length."""
+    included = [c for c in book.chapters if c.kind != "exclude" and c.word_count > 0]
+    total_words = sum(c.word_count for c in included)
+    if total_words <= 0:
+        return {}
+    caps: dict[str, int] = {}
+    for chapter in included:
+        share = chapter.word_count / total_words
+        cap = max(min_cap, int(target_words * share))
+        if priority.get(chapter.chapter_id) == "high":
+            cap = int(cap * high_priority_multiplier)
+        caps[chapter.chapter_id] = cap
+    return caps
+
+
 def analytical_coverage(selected: list[SelectedBlock], analytical_map: AnalyticalMap) -> dict[str, list[str]]:
     coverage: dict[str, list[str]] = {req.requirement_id: [] for req in analytical_map.requirements}
     for block in selected:
@@ -2028,16 +2051,16 @@ def choose_blocks_under_budget(
     analytical_map: AnalyticalMap,
     target_ratio: float,
     coverage_mode: str = "all",
-    chapter_max_share: float = 0.08,
 ) -> tuple[list[SelectedBlock], int]:
     """Select readable blocks while protecting analytical completeness before chapter balance."""
     target_words = int(book.total_words * target_ratio)
     priority = chapter_priority_map(overview)
+    chapter_caps = chapter_word_caps(book, target_words, priority)
+    min_cap = 600
     chosen: list[SelectedBlock] = []
     chosen_ids: set[str] = set()
     chosen_words_by_chapter: dict[str, int] = {}
     used_words = 0
-    chapter_cap = max(600, int(target_words * chapter_max_share))
 
     included_chapters = [c for c in book.chapters if c.kind != "exclude"]
     by_chapter: dict[str, list[SelectedBlock]] = {}
@@ -2053,10 +2076,9 @@ def choose_blocks_under_budget(
         return priority_multiplier(block) * continuity_bonus * analytical_bonus * block.score / math.sqrt(max(block.word_count, 1))
 
     def cap_for(block: SelectedBlock, protected: bool = False) -> int:
+        chapter_cap = chapter_caps.get(block.chapter_id, min_cap)
         if protected:
             return max(chapter_cap, chosen_words_by_chapter.get(block.chapter_id, 0) + block.word_count)
-        if priority.get(block.chapter_id) == "high":
-            return int(chapter_cap * 1.15)
         return chapter_cap
 
     def conflicts(block: SelectedBlock) -> bool:
@@ -2198,7 +2220,8 @@ def apply_qc_changes(
     candidates: list[SelectedBlock],
     review: QualityControlResponse,
     target_words: int,
-    chapter_max_share: float = 0.08,
+    book: Book,
+    overview: StructuralOverview,
 ) -> list[SelectedBlock]:
     candidate_map = {b.block_id: b for b in candidates}
     selected_by_chapter: dict[str, list[SelectedBlock]] = {}
@@ -2220,13 +2243,16 @@ def apply_qc_changes(
     for block in revised:
         words_by_chapter[block.chapter_id] = words_by_chapter.get(block.chapter_id, 0) + block.word_count
 
-    chapter_cap = max(600, int(target_words * chapter_max_share * 1.15))
+    priority = chapter_priority_map(overview)
+    chapter_caps = chapter_word_caps(book, target_words, priority)
+    qc_tolerance = 1.15
     for block_id in review.add_block_ids:
         block = candidate_map.get(block_id)
         if block is None or block_id in current_ids:
             continue
         new_words = sum(b.word_count for b in revised) + block.word_count
         new_chapter_words = words_by_chapter.get(block.chapter_id, 0) + block.word_count
+        chapter_cap = int(chapter_caps.get(block.chapter_id, 600) * qc_tolerance)
         if new_words <= int(target_words * 1.12) and (new_chapter_words <= chapter_cap or block.protected_requirement_ids):
             revised.append(block)
             current_ids.add(block_id)
@@ -3141,8 +3167,8 @@ def run_pipeline(args: argparse.Namespace) -> Path:
         analytical_map=analytical_map,
         target_ratio=args.target_ratio,
         coverage_mode=args.coverage_mode,
-        chapter_max_share=args.chapter_max_share,
     )
+    chapter_caps = chapter_word_caps(book, target_words, chapter_priority_map(overview))
     LOGGER.info(
         "Initial global selection retains %s words against a target of %s.",
         f"{sum(b.word_count for b in selected):,}",
@@ -3159,7 +3185,7 @@ def run_pipeline(args: argparse.Namespace) -> Path:
         output_dir=output_dir,
     )
     if args.apply_qc:
-        selected = apply_qc_changes(selected, scored, review, target_words, chapter_max_share=args.chapter_max_share)
+        selected = apply_qc_changes(selected, scored, review, target_words, book, overview)
 
     transitions = generate_editorial_transitions(
         llm=llm,
@@ -3209,7 +3235,7 @@ def run_pipeline(args: argparse.Namespace) -> Path:
             if req.must_be_preserved and not analytical_coverage(selected, analytical_map).get(req.requirement_id)
         ],
         "coverage_mode": args.coverage_mode,
-        "chapter_max_share": args.chapter_max_share,
+        "chapter_word_caps": chapter_caps,
     }
     safe_json_dump(global_payload, output_dir / "global_selection.json")
 
@@ -3261,12 +3287,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
         choices=["all", "major", "none"],
         default="all",
         help="Continuity coverage after mandatory analytical coverage. 'all' attempts to retain at least one passage per parsed non-back-matter section; default: all.",
-    )
-    parser.add_argument(
-        "--chapter-max-share",
-        type=float,
-        default=0.08,
-        help="Maximum share of final words assigned to one chapter before high-priority tolerance; default: 0.08.",
     )
     parser.add_argument(
         "--candidate-ratio",
@@ -3350,8 +3370,6 @@ def validate_args(args: argparse.Namespace) -> None:
         raise ValueError("--target-ratio must be between 0 and 1.")
     if not args.target_ratio < args.candidate_ratio <= 1:
         raise ValueError("--candidate-ratio must be greater than --target-ratio and no greater than 1.")
-    if not 0.01 <= args.chapter_max_share <= 0.50:
-        raise ValueError("--chapter-max-share must be between 0.01 and 0.50.")
     if args.chapter_chunk_words < 1000:
         raise ValueError("--chapter-chunk-words must be at least 1000.")
     if args.score_batch_size < 1:

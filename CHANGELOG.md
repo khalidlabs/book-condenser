@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.4
+
+### Changed
+- Final selection allocates retained words per chapter in proportion to ...
+
+### Removed
+- `--chapter-max-share` CLI flag. ...
+
+### Changed
+
+- Final selection allocates retained words per chapter in proportion to each included chapter's source length, replacing the flat `--chapter-max-share` ceiling.
+
+### Removed
+
+- `--chapter-max-share` CLI flag. Per-chapter budgets are now derived automatically from parsed structure and `--target-ratio`.
+
 ## 0.1.3
 
 - New analytical framework for intellectual-structure analysis and passage selection.

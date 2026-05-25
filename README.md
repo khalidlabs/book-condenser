@@ -21,7 +21,6 @@ Book Condenser is designed for nonfiction works in which the development of the 
 - substantive limitations, objections, or qualifications;
 - the final conclusion or implications.
 
-The objective is not to preserve every illustration or repetition. It is to preserve the book's intellectual architecture in the author's own words.
 
 ## How it works
 
@@ -249,6 +248,8 @@ Example chapter map:
 
 Pages are 1-indexed. Back matter remains visible in the structure report but is excluded from passage selection and source-word budgeting.
 
+Final retained words are allocated across included chapters in proportion to each chapter's source length (with a 600-word floor per chapter and a 15% cap boost for chapters marked high priority in the structural overview). Mandatory analytical coverage and continuity anchors may exceed a chapter's cap when required.
+
 ## Main controls
 
 | Argument | Meaning | Default |
@@ -256,7 +257,6 @@ Pages are 1-indexed. Back matter remains visible in the structure report but is 
 | `--target-ratio` | Final retained source-word ratio | `0.25` |
 | `--candidate-ratio` | Candidate quotation share per chapter before global pruning | `0.42` |
 | `--coverage-mode` | Continuity coverage after mandatory analytical coverage: `all`, `major`, or `none` | `all` |
-| `--chapter-max-share` | Maximum share of final retained words assigned to one chapter before high-priority tolerance | `0.08` |
 | `--emphasis` | Additional selection guidance supplied to the model | built-in analytical emphasis |
 | `--chapter-chunk-words` | Split unusually long chapters above this word count for model calls | `18000` |
 | `--max-structural-words` | Maximum opening and ending words supplied to the inspectional overview | `24000` |
